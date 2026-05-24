@@ -1,0 +1,4 @@
+package: gen
+generate:
+  models: true  # PollenResponse, SymptomRequest 等のリクエスト/レスポンス型定義を生成
+output: internal/gen/types.gen.go

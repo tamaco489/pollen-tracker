@@ -1,0 +1,46 @@
+SeasonInfo:
+  type: object
+  required:
+    - peak
+    - characteristics
+    - region
+  properties:
+    peak:
+      type: string
+      description: "ピークシーズン (例: 2月〜4月)"
+    characteristics:
+      type: string
+      description: 特徴・症状の傾向
+    region:
+      type: string
+      description: 主な飛散地域
+
+PollenResponse:
+  type: object
+  required:
+    - date
+    - level
+    - pollen_type
+    - season_info
+  properties:
+    date:
+      type: string
+      format: date
+      description: 取得日 (YYYY-MM-DD)
+    level:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: "花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)"
+    pollen_type:
+      type: string
+      enum:
+        - CEDAR
+        - CYPRESS
+        - RAGWEED
+        - GRASS
+        - MUGWORT
+      description: "現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)"
+    season_info:
+      $ref: "#/SeasonInfo"

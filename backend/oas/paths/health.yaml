@@ -1,0 +1,24 @@
+get:
+  summary: ヘルスチェック
+  description: |-
+    - サービスの稼働状態を確認する
+    - 認証不要で呼び出し可能
+    - ロードバランサーや監視ツールからの死活監視に使用する
+  operationId: GetHealth
+  security: []
+  responses:
+    "200":
+      description: サービス稼働中
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/health.yaml#/HealthResponse"
+    "500":
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/common.yaml#/InternalServerError"
+          example:
+            error: "Internal server error"
+            code: "INTERNAL_SERVER_ERROR"

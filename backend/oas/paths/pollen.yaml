@@ -1,0 +1,54 @@
+get:
+  summary: 指定座標の花粉レベルを取得する
+  description: |-
+    - 緯度・経度をもとに Google Pollen API を呼び出し、指定日の花粉レベル (1〜5) を返す
+    - date を省略した場合は当日のデータを返す
+    - 現在シーズンのメイン花粉種と season_info (ピーク期間・特徴・飛散地域) も合わせて返す
+  operationId: GetPollen
+  parameters:
+    - name: lat
+      in: query
+      required: true
+      schema:
+        type: number
+        format: double
+      description: "緯度 (例: 35.7122)"
+    - name: lng
+      in: query
+      required: true
+      schema:
+        type: number
+        format: double
+      description: "経度 (例: 139.7811)"
+    - name: date
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: 取得日 (YYYY-MM-DD)。省略時は当日
+  responses:
+    "200":
+      description: 花粉レベルの取得成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/pollen.yaml#/PollenResponse"
+    "400":
+      description: パラメータ不正
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/common.yaml#/BadRequestError"
+          example:
+            error: "Invalid query parameter"
+            code: "BAD_REQUEST"
+    "500":
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/common.yaml#/InternalServerError"
+          example:
+            error: "Internal server error"
+            code: "INTERNAL_SERVER_ERROR"

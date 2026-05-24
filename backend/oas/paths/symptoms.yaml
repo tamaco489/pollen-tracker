@@ -1,0 +1,230 @@
+symptoms:
+  get:
+    summary: 症状ログを一覧取得する
+    description: |-
+      - from〜to で指定した期間の症状ログを配列で返す
+      - from を省略すると当日から 30 日前、to を省略すると当日を終端とする
+      - レスポンスには items (ログ配列) と total (総件数) が含まれる
+    operationId: GetSymptoms
+    parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 取得開始日 (YYYY-MM-DD)。省略時は 30 日前
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 取得終了日 (YYYY-MM-DD)。省略時は当日
+    responses:
+      "200":
+        description: 症状ログ一覧の取得成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/symptoms.yaml#/SymptomsListResponse"
+      "400":
+        description: パラメータ不正
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequestError"
+            example:
+              error: "Invalid query parameter"
+              code: "BAD_REQUEST"
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"
+
+  post:
+    summary: 症状ログを保存する
+    description: |-
+      - 指定日のくしゃみ・鼻水・目のかゆみの強度 (1〜5) と花粉レベルを記録する
+      - 同日付のレコードが既に存在する場合は 409 を返す
+      - took_medication は省略時 false、note は省略時空文字列をデフォルト値として送信する
+    operationId: PostSymptoms
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/symptoms.yaml#/SymptomRequest"
+    responses:
+      "201":
+        description: 症状ログの保存成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/symptoms.yaml#/SymptomResponse"
+      "400":
+        description: パラメータ不正
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequestError"
+            example:
+              error: "Invalid request body"
+              code: "BAD_REQUEST"
+      "409":
+        description: 同日付のレコードが既に存在する
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/ConflictError"
+            example:
+              error: "Symptom log for this date already exists"
+              code: "CONFLICT"
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"
+
+symptomsId:
+  get:
+    summary: 症状ログを取得する
+    description: |-
+      - パスパラメーターで指定した UUID の症状ログを 1 件返す
+      - 指定 UUID のログが存在しない場合は 404 を返す
+    operationId: GetSymptomsId
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: 取得対象の症状ログ ID (UUID v7)
+    responses:
+      "200":
+        description: 症状ログの取得成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/symptoms.yaml#/SymptomResponse"
+      "404":
+        description: 指定 UUID の症状ログが存在しない
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/NotFoundError"
+            example:
+              error: "Symptom log not found"
+              code: "NOT_FOUND"
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"
+
+  put:
+    summary: 症状ログを更新する
+    description: |-
+      - パスパラメーターで指定した UUID の症状ログを全フィールド上書き更新する
+      - リクエストボディの全フィールドが必須で、送信された値でそのまま上書きされる
+      - 指定 UUID のログが存在しない場合は 404 を返す
+    operationId: PutSymptomsId
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: 更新対象の症状ログ ID (UUID v7)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/symptoms.yaml#/SymptomUpdateRequest"
+    responses:
+      "200":
+        description: 症状ログの更新成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/symptoms.yaml#/SymptomResponse"
+      "400":
+        description: パラメータ不正
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequestError"
+            example:
+              error: "Invalid request body"
+              code: "BAD_REQUEST"
+      "404":
+        description: 指定 UUID の症状ログが存在しない
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/NotFoundError"
+            example:
+              error: "Symptom log not found"
+              code: "NOT_FOUND"
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"
+
+  delete:
+    summary: 症状ログを削除する
+    description: |-
+      - パスパラメーターで指定した UUID の症状ログを削除する
+      - 削除成功時はボディなしで 204 を返す
+      - 指定 UUID のログが存在しない場合は 404 を返す
+    operationId: DeleteSymptomsId
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: 削除対象の症状ログ ID (UUID v7)
+    responses:
+      "204":
+        description: 症状ログの削除成功
+      "404":
+        description: 指定 UUID の症状ログが存在しない
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/NotFoundError"
+            example:
+              error: "Symptom log not found"
+              code: "NOT_FOUND"
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"
