@@ -1,0 +1,10 @@
+HealthResponse:
+  type: object
+  required:
+    - status
+  properties:
+    status:
+      type: string
+      enum:
+        - ok
+      description: サービスの稼働状態

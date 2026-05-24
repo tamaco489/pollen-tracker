@@ -1,0 +1,165 @@
+SymptomRequest:
+  type: object
+  required:
+    - date
+    - sneezing
+    - runny
+    - itchy
+    - pollen_level
+    - took_medication
+    - note
+  properties:
+    date:
+      type: string
+      format: date
+      description: 記録日 (YYYY-MM-DD)
+    sneezing:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: くしゃみの強度 1〜5
+    runny:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: 鼻水の強度 1〜5
+    itchy:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: 目のかゆみの強度 1〜5
+    pollen_level:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: 記録時の花粉レベル 1〜5
+    took_medication:
+      type: boolean
+      default: false
+      description: その日薬を服用したか。省略時は false として送信
+    note:
+      type: string
+      default: ""
+      maxLength: 200
+      description: フリーメモ (最大 200 文字)。省略時は空文字として送信
+
+SymptomUpdateRequest:
+  type: object
+  required:
+    - sneezing
+    - runny
+    - itchy
+    - pollen_level
+    - took_medication
+    - note
+  properties:
+    sneezing:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: くしゃみの強度 1〜5
+    runny:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: 鼻水の強度 1〜5
+    itchy:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: 目のかゆみの強度 1〜5
+    pollen_level:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: 花粉レベル 1〜5
+    took_medication:
+      type: boolean
+      default: false
+      description: その日薬を服用したか。省略時は false として送信
+    note:
+      type: string
+      default: ""
+      maxLength: 200
+      description: フリーメモ (最大 200 文字)。省略時は空文字として送信
+
+SymptomResponse:
+  type: object
+  required:
+    - id
+    - date
+    - sneezing
+    - runny
+    - itchy
+    - pollen_level
+    - took_medication
+    - note
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: 症状ログ ID (UUID v7)
+    date:
+      type: string
+      format: date
+      description: 記録日 (YYYY-MM-DD)
+    sneezing:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+    runny:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+    itchy:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+    pollen_level:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+    took_medication:
+      type: boolean
+      default: false
+    note:
+      type: string
+      default: ""
+      maxLength: 200
+    created_at:
+      type: string
+      format: date-time
+      description: 作成日時 (RFC3339)
+    updated_at:
+      type: string
+      format: date-time
+      description: 最終更新日時 (RFC3339)
+
+SymptomsListResponse:
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      type: array
+      items:
+        $ref: "#/SymptomResponse"
+    total:
+      type: integer
+      format: int32
+      description: 総件数

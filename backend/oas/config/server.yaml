@@ -1,0 +1,8 @@
+package: gen
+generate:
+  echo-server: true    # ServerInterface + RegisterHandlers を生成
+  strict-server: true  # 型安全なリクエスト/レスポンス構造体を生成
+  embedded-spec: false
+output: internal/gen/server.gen.go
+import-mapping:
+  github.com/labstack/echo/v4: github.com/labstack/echo/v5  # Echo v5 に差し替え

@@ -4,6 +4,8 @@
 
 @.claude/rules/github/commit-types.md
 @.claude/rules/github/commit-subject.md
+@.claude/rules/github/pr-description.md
+@.claude/rules/github/labels.md
 
 ## プロジェクト概要
 

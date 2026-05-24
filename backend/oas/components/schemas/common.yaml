@@ -1,0 +1,48 @@
+ErrorResponse:
+  type: object
+  required:
+    - error
+    - code
+  properties:
+    error:
+      type: string
+      description: エラー内容の説明文 (英語)
+    code:
+      type: string
+      description: エラーコード
+
+BadRequestError:
+  allOf:
+    - $ref: "#/ErrorResponse"
+  properties:
+    code:
+      type: string
+      enum:
+        - BAD_REQUEST
+
+NotFoundError:
+  allOf:
+    - $ref: "#/ErrorResponse"
+  properties:
+    code:
+      type: string
+      enum:
+        - NOT_FOUND
+
+ConflictError:
+  allOf:
+    - $ref: "#/ErrorResponse"
+  properties:
+    code:
+      type: string
+      enum:
+        - CONFLICT
+
+InternalServerError:
+  allOf:
+    - $ref: "#/ErrorResponse"
+  properties:
+    code:
+      type: string
+      enum:
+        - INTERNAL_SERVER_ERROR
