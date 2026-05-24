@@ -24,22 +24,27 @@ Records daily symptom intensity and correlates it with real-time pollen data fro
 
 ```text
 pollen-tracker/
-├── pollen/
-│   ├── backend/          # Go Lambda (Echo v5)
-│   │   ├── cmd/lambda/   # Lambda entrypoint
-│   │   ├── internal/     # Handlers, domain logic, DB
-│   │   ├── migrations/   # goose migration SQL
-│   │   ├── pkg/          # Shared packages (config, errors)
-│   │   └── openapi.yaml  # OpenAPI 3.0 spec
-│   │
-│   ├── mobile/           # React Native (Expo)
-│   │   ├── assets/       # Icons, splash images
-│   │   └── src/          # Feature-based source code
-│   │
-│   └── infra/            # AWS CDK (TypeScript)
+├── backend/                  # Go Lambda (Echo v5)
+│   ├── cmd/lambda/           # Lambda entrypoint
+│   ├── internal/
+│   │   └── gen/              # oapi-codegen generated code (do not edit manually)
+│   ├── oas/                  # OpenAPI spec (split by resource)
+│   │   ├── components/       # Schemas, security definitions
+│   │   ├── config/           # oapi-codegen config files
+│   │   ├── paths/            # Path definitions per resource
+│   │   ├── oapi-base.yaml    # Root spec with $ref links
+│   │   └── oapi.yaml         # Bundled spec (auto-generated)
+│   └── Makefile
+│
+├── mobile/                   # React Native (Expo)
+│   ├── assets/               # Icons, splash images
+│   └── src/                  # Feature-based source code
+│
+├── infra/                    # AWS CDK (TypeScript)
 │
 ├── .github/
-│   └── workflows/        # CI/CD workflows
+│   ├── workflows/            # CI/CD workflows
+│   └── PULL_REQUEST_TEMPLATE.md
 │
 └── docs/
     ├── README.md
@@ -50,40 +55,39 @@ pollen-tracker/
 
 ### Prerequisites
 
-- Go 1.26.3 (managed via [asdf](https://asdf-vm.com/))
-- Node.js 24.13.0 (managed via asdf)
+- Go 1.26.1 (managed via [asdf](https://asdf-vm.com/))
+- Node.js 24.x (managed via asdf)
 - AWS CDK CLI (`npm install -g aws-cdk`)
 - Expo CLI (`npx expo`)
 - Docker (for local development)
 
-### Backend (local)
+### Backend
+
+Start API server
 
 ```bash
-cd pollen/backend
+cd backend
 docker compose up
 ```
 
-### Frontend (local)
+Code generation (OpenAPI spec → Go)
 
 ```bash
-cd pollen/mobile
+make gen-api
+```
+
+### Frontend
+
+```bash
+cd mobile
 npx expo start
 ```
 
 ### Infrastructure
 
 ```bash
-cd pollen/infra
+cd infra
 cdk bootstrap   # first time only
 cdk diff        # preview changes
 cdk deploy      # apply changes
 ```
-
-## API Endpoints
-
-| Method | Path               | Description                        |
-| ------ | ------------------ | ---------------------------------- |
-| GET    | `/pollen`          | Fetch pollen levels by coordinates |
-| POST   | `/symptoms`        | Record daily symptoms              |
-| GET    | `/symptoms`        | List recorded symptoms             |
-| PUT    | `/symptoms/{date}` | Update symptoms for a date         |
