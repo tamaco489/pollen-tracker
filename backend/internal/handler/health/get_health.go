@@ -7,6 +7,7 @@ import (
 )
 
 func (h *Health) GetHealth(ctx context.Context, _ gen.GetHealthRequestObject) (gen.GetHealthResponseObject, error) {
-	h.logger.InfoContext(ctx, "health check requested")
-	return gen.GetHealth200JSONResponse{Status: gen.Ok}, nil
+	return gen.GetHealth200JSONResponse{
+		Status: gen.Ok,
+	}, nil
 }

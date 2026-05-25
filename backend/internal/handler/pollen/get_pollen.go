@@ -7,6 +7,7 @@ import (
 
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
+
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 

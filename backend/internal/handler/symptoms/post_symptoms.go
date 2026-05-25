@@ -5,9 +5,10 @@ import (
 	"math/rand"
 	"time"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 func (h *Symptoms) PostSymptoms(_ context.Context, _ gen.PostSymptomsRequestObject) (gen.PostSymptomsResponseObject, error) {
