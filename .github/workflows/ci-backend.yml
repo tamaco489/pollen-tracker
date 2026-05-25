@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Node.js 24 がデフォルト化される 2026-06-02 以降は削除可
 
 jobs:
   lint:
