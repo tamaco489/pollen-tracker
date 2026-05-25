@@ -25,6 +25,17 @@ test: ## テストを実行する
 	go test ./...
 
 
+.PHONY: up down logs
+up: ## コンテナを起動する
+	docker compose up -d pollen-api
+
+down: ## コンテナを停止する
+	docker compose down pollen-api
+
+logs: ## コンテナのログを表示する
+	docker compose logs -f pollen-api
+
+
 .PHONY: help
 help: ## ヘルプを表示する
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
