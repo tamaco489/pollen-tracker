@@ -1,3 +1,13 @@
 {
-  "enabledMcpjsonServers": ["context7"]
+  "enabledMcpjsonServers": ["context7", "pollen-db"],
+  "permissions": {
+    "allow": [
+      "mcp__pollen-db__list-tables",
+      "mcp__pollen-db__read-query",
+      "mcp__pollen-db__write-query",
+      "mcp__pollen-db__create-table",
+      "mcp__pollen-db__alter-table",
+      "mcp__pollen-db__describe-table"
+    ]
+  }
 }
