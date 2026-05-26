@@ -29,7 +29,7 @@ mod: ## go.mod / go.sum の整合性を確認する
 	git diff --exit-code go.mod go.sum
 
 build: mod ## Lambda 関数をビルドする
-	go build -o bin/bootstrap ./cmd/lambda/
+	go build -o build/bootstrap ./cmd/lambda/
 
 test: ## テストを実行する
 	go test ./...
@@ -46,6 +46,11 @@ down: ## コンテナを停止する
 
 logs: ## コンテナのログを表示する
 	docker compose logs -f pollen-api
+
+
+.PHONY: db-shell
+db-shell: ## Turso DB シェルに接続する
+	turso db shell http://localhost:18081
 
 
 .PHONY: help
