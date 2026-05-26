@@ -1,0 +1,12 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - staticcheck  # gosimple は v2 で staticcheck に統合済み
+    - unused
+  exclusions:
+    paths:
+      - internal/gen # oapi-codegen 自動生成ファイルを除外
