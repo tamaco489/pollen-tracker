@@ -8,8 +8,31 @@ services:
       - ./:/go/src/github.com/tamaco489/pollen-tracker/backend
       - ~/.cache/go-build:/root/.cache/go-build
     ports:
-      - "8080:8080"
+      - "18080:8080"
     env_file:
       - .env
+    depends_on:
+      pollen-db:
+        condition: service_healthy
     command: >
       sh -c "go mod download && go install github.com/air-verse/air@latest && air -c .air.toml"
+
+  pollen-db:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: pollen_db
+    platform: linux/amd64
+    ports:
+      - "18081:8080"
+    environment:
+      - SQLD_NODE=primary
+    volumes:
+      - pollen-db-data:/var/lib/sqld
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q ':1F90' /proc/net/tcp || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  pollen-db-data:

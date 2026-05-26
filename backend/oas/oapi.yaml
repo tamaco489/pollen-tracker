@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: 花粉飛散量とアレルギー症状を記録・可視化する API
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:18080
     description: Local development
 security:
   - ApiKeyAuth: []

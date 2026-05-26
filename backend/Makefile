@@ -29,7 +29,7 @@ mod: ## go.mod / go.sum の整合性を確認する
 	git diff --exit-code go.mod go.sum
 
 build: mod ## Lambda 関数をビルドする
-	go build -o bin/bootstrap ./cmd/lambda/
+	go build -o build/bootstrap ./cmd/lambda/
 
 test: ## テストを実行する
 	go test ./...
@@ -39,13 +39,18 @@ verify: fmt lint build test ## fmt, lint, mod, build, test を一括実行する
 
 .PHONY: up down logs
 up: ## コンテナを起動する
-	docker compose up -d pollen-api
+	docker compose up -d pollen-db pollen-api
 
 down: ## コンテナを停止する
-	docker compose down pollen-api
+	docker compose down pollen-db pollen-api
 
 logs: ## コンテナのログを表示する
 	docker compose logs -f pollen-api
+
+
+.PHONY: db-shell
+db-shell: ## Turso DB シェルに接続する
+	turso db shell http://localhost:18081
 
 
 .PHONY: help
