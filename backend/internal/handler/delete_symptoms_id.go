@@ -1,4 +1,4 @@
-package symptoms
+package handler
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
 )
 
-func (h *Symptoms) DeleteSymptomsId(_ context.Context, _ gen.DeleteSymptomsIdRequestObject) (gen.DeleteSymptomsIdResponseObject, error) {
+func (h *Handler) DeleteSymptomsId(_ context.Context, _ gen.DeleteSymptomsIdRequestObject) (gen.DeleteSymptomsIdResponseObject, error) {
 	switch rand.Intn(3) {
 	case 0:
 		return gen.DeleteSymptomsId204Response{}, nil

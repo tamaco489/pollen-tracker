@@ -1,0 +1,42 @@
+package di
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/tamaco489/pollen-tracker/backend/internal/handler"
+	"github.com/tamaco489/pollen-tracker/backend/internal/server"
+	"github.com/tamaco489/pollen-tracker/backend/internal/usecase"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/config"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/infrastructure/datastore"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/logger"
+
+	google_pollen "github.com/tamaco489/pollen-tracker/backend/pkg/library/google/pollen"
+)
+
+// NewServerContainer は全依存を配線して Server を返す
+func NewServerContainer(ctx context.Context) (*server.Server, error) {
+	l := logger.New()
+
+	cfg, err := config.Load()
+	if err != nil {
+		return nil, fmt.Errorf("load config: %w", err)
+	}
+
+	conn, err := datastore.Open(ctx, cfg, l)
+	if err != nil {
+		return nil, fmt.Errorf("connect datastore: %w", err)
+	}
+
+	pollenClient := google_pollen.NewPollenClient(cfg.Google.PollenAPIKey)
+	pollenUseCase := usecase.NewGetForecast(pollenClient)
+
+	h := handler.New(pollenUseCase)
+
+	srv, err := server.NewServer(ctx, l, cfg, conn, h)
+	if err != nil {
+		return nil, fmt.Errorf("new server: %w", err)
+	}
+
+	return srv, nil
+}

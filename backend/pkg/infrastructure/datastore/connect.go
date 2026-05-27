@@ -1,4 +1,4 @@
-package db
+package datastore
 
 import (
 	"context"
@@ -13,12 +13,12 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/pkg/logger"
 )
 
-// DB は *sql.DB のラッパー。Open / Close を同一パッケージで管理する。
+// DB は *sql.DB のラッパーOpen / Close を同一パッケージで管理する
 type DB struct {
 	*sql.DB
 }
 
-// Open は config から Turso DB への接続を初期化して返す。
+// Open は config から Turso DB への接続を初期化して返す
 func Open(ctx context.Context, cfg *config.Config, l *logger.Logger) (*DB, error) {
 	opts := []libsql.Option{
 		libsql.WithTls(cfg.App.Env.IsProduction()),
@@ -35,8 +35,8 @@ func Open(ctx context.Context, cfg *config.Config, l *logger.Logger) (*DB, error
 
 	db := sql.OpenDB(connector)
 
-	// Lambda 向けコネクションプール設定: 1インスタンスにつき接続1本で十分。
-	// MaxIdleConns=1 でウォームインスタンス間の接続を再利用し、30s アイドル後に解放してコールドスタート時のリソースを節約する。
+	// Lambda 向けコネクションプール設定: 1インスタンスにつき接続1本で十分
+	// MaxIdleConns=1 でウォームインスタンス間の接続を再利用し、30s アイドル後に解放してコールドスタート時のリソースを節約する
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
 	db.SetConnMaxIdleTime(30 * time.Second)
