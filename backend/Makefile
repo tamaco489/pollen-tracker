@@ -1,6 +1,7 @@
 .PHONY: setup-tools
 setup-tools: ## 開発環境をセットアップする
 	go install github.com/pressly/goose/v3/cmd/goose@latest
+	go install github.com/tursodatabase/turso-cli/cmd/turso@latest
 	npm install -g @redocly/cli
 
 
