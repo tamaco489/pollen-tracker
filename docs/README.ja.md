@@ -77,7 +77,7 @@ make setup-tools
 API サーバ起動
 
 ```bash
-docker compose up
+make up
 ```
 
 DB マイグレーション実行

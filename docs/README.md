@@ -77,7 +77,7 @@ make setup-tools
 Start API server
 
 ```bash
-docker compose up
+make up
 ```
 
 Run DB migrations
