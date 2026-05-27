@@ -1,4 +1,4 @@
-package symptoms
+package handler
 
 import (
 	"context"
@@ -11,10 +11,10 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-func (h *Symptoms) PostSymptoms(_ context.Context, _ gen.PostSymptomsRequestObject) (gen.PostSymptomsResponseObject, error) {
+func (h *Handler) PutSymptomsId(_ context.Context, _ gen.PutSymptomsIdRequestObject) (gen.PutSymptomsIdResponseObject, error) {
 	switch rand.Intn(4) {
 	case 0:
-		return gen.PostSymptoms201JSONResponse{
+		return gen.PutSymptomsId200JSONResponse{
 			CreatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
 			Date:           openapi_types.Date{Time: time.Date(2026, 5, 25, 0, 0, 0, 0, time.UTC)},
 			Id:             openapi_types.UUID{},
@@ -27,17 +27,17 @@ func (h *Symptoms) PostSymptoms(_ context.Context, _ gen.PostSymptomsRequestObje
 			UpdatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
 		}, nil
 	case 1:
-		return gen.PostSymptoms400JSONResponse{
+		return gen.PutSymptomsId400JSONResponse{
 			Code:  httperror.CodeBadRequest.String(),
 			Error: httperror.MsgBadRequest.String(),
 		}, nil
 	case 2:
-		return gen.PostSymptoms409JSONResponse{
-			Code:  httperror.CodeAlreadyExists.String(),
-			Error: httperror.MsgAlreadyExists.String(),
+		return gen.PutSymptomsId404JSONResponse{
+			Code:  httperror.CodeNotFound.String(),
+			Error: httperror.MsgNotFound.String(),
 		}, nil
 	default:
-		return gen.PostSymptoms500JSONResponse{
+		return gen.PutSymptomsId500JSONResponse{
 			Code:  httperror.CodeInternalError.String(),
 			Error: httperror.MsgInternalError.String(),
 		}, nil

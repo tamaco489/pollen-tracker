@@ -1,4 +1,4 @@
-package symptoms
+package handler
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-func (h *Symptoms) GetSymptoms(_ context.Context, _ gen.GetSymptomsRequestObject) (gen.GetSymptomsResponseObject, error) {
+func (h *Handler) GetSymptoms(_ context.Context, _ gen.GetSymptomsRequestObject) (gen.GetSymptomsResponseObject, error) {
 	switch rand.Intn(3) {
 	case 0:
 		return gen.GetSymptoms200JSONResponse{

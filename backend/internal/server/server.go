@@ -10,36 +10,26 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
-	"github.com/tamaco489/pollen-tracker/backend/internal/db"
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 	"github.com/tamaco489/pollen-tracker/backend/internal/handler"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/config"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/infrastructure/datastore"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/logger"
 )
 
 type Server struct {
 	echo   *echo.Echo
 	cfg    *config.Config
-	db     *db.DB
+	db     *datastore.DB
 	cancel atomic.Pointer[context.CancelFunc]
 	done   chan struct{}
 }
 
-// New は設定・DB 接続・ルーターを初期化して Server を返す。
-func New(ctx context.Context, l *logger.Logger) (*Server, error) {
-	cfg, err := config.Load()
-	if err != nil {
-		return nil, fmt.Errorf("load config: %w", err)
-	}
-
-	conn, err := db.Open(ctx, cfg, l)
-	if err != nil {
-		return nil, fmt.Errorf("connect db: %w", err)
-	}
-
+// NewServer は設定・DB 接続・ルーターを受け取り Server を返す
+func NewServer(ctx context.Context, l *logger.Logger, cfg *config.Config, conn *datastore.DB, h *handler.Handler) (*Server, error) {
 	e := echo.New()
 
-	// Recover を最初に追加して panic をサーバークラッシュではなく 500 に変換する。
+	// Recover を最初に追加して panic をサーバークラッシュではなく 500 に変換する
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(
 		middleware.RequestLoggerConfig{
@@ -69,7 +59,6 @@ func New(ctx context.Context, l *logger.Logger) (*Server, error) {
 			},
 		}))
 
-	h := handler.New(l)
 	gen.RegisterHandlers(e, gen.NewStrictHandler(h, nil))
 
 	l.InfoContext(ctx, "server initialized",
@@ -86,8 +75,9 @@ func New(ctx context.Context, l *logger.Logger) (*Server, error) {
 	}, nil
 }
 
-// Run は HTTP サーバーを起動してブロックする。
-// Shutdown が呼ばれると graceful shutdown が完了してから返る。
+// Run は HTTP サーバーを起動してブロックする
+//
+// Shutdown が呼ばれると graceful shutdown が完了してから返る
 func (s *Server) Run(ctx context.Context) error {
 	runCtx, cancelFn := context.WithCancel(ctx)
 	s.cancel.Store(&cancelFn)
@@ -97,20 +87,18 @@ func (s *Server) Run(ctx context.Context) error {
 	sc := echo.StartConfig{
 		Address:         ":" + s.cfg.App.Port,
 		GracefulTimeout: 10 * time.Second,
-		// 本番環境ではバナー・ポート出力を抑制して構造化ログに統一する。
-		// 開発環境では Echo のアスキーアートをそのまま表示する。
-		HideBanner: isPrd,
-		HidePort:   isPrd,
+		HideBanner:      isPrd, // 開発環境: バナー・ポート出力を表示, 本番環境: バナー・ポート出力を抑制して構造化ログに統一
+		HidePort:        isPrd,
 	}
 	return sc.Start(runCtx, s.echo)
 }
 
-// Shutdown は HTTP サーバーの graceful shutdown と DB 接続のクローズを行う。
+// Shutdown は HTTP サーバーの graceful shutdown と DB 接続のクローズを行う
 func (s *Server) Shutdown(ctx context.Context) error {
 	if fn := s.cancel.Load(); fn != nil {
 		(*fn)()
 	}
-	// HTTP サーバーの graceful shutdown が完了するまで待機する。
+	// HTTP サーバーの graceful shutdown が完了するまで待機する
 	select {
 	case <-s.done:
 	case <-ctx.Done():
