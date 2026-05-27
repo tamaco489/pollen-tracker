@@ -70,7 +70,7 @@ func (uc *getForecastUseCase) GetForecast(ctx context.Context, input GetForecast
 
 	// 対象日付の予報データが API レスポンスに含まれない場合はエラーを返す
 	if len(resp.DailyForecasts) <= dayOffset {
-		return nil, fmt.Errorf("%w: no daily forecast for requested date", sentinel.ErrNotFound)
+		return nil, fmt.Errorf("google pollen api returned insufficient data: got %d days, expected index %d", len(resp.DailyForecasts), dayOffset)
 	}
 
 	pollenType, level := uc.dominantPollen(resp.DailyForecasts[dayOffset].Plants)
