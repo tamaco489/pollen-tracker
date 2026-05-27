@@ -3,7 +3,7 @@ package pollen
 import "context"
 
 // PollenClient は Google Pollen API クライアントのインターフェース
-type PollenClient interface {
+type PollenService interface {
 	GetForecast(ctx context.Context, req *ForecastRequest) (*ForecastResponse, error)
 }
 

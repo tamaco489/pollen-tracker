@@ -11,8 +11,8 @@ type pollenClient struct {
 	apiKey     string
 }
 
-// NewPollenClient は新しい PollenClient を返す
-func NewPollenClient(apiKey string) PollenClient {
+// NewPollenClient は新しい PollenService を返す
+func NewPollenClient(apiKey string) PollenService {
 	return &pollenClient{
 		httpClient: &http.Client{Timeout: 10 * time.Second},
 		apiKey:     apiKey,

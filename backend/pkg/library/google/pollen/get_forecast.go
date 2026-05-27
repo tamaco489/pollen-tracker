@@ -99,10 +99,10 @@ func toForecastResponse(apiResp *forecastResponse) *ForecastResponse {
 	for _, day := range apiResp.DailyInfo {
 		plants := make([]Plant, 0, len(day.PlantInfo))
 		for _, p := range day.PlantInfo {
-			level := minPollenLevel.toInt()
+			level := MinPollenLevel.ToInt()
 			if p.IndexInfo != nil {
-				if v := pollenLevel(p.IndexInfo.Value); v.isValid() {
-					level = v.toInt()
+				if v := PollenLevel(p.IndexInfo.Value); v.IsValid() {
+					level = v.ToInt()
 				}
 			}
 			plants = append(plants, Plant{

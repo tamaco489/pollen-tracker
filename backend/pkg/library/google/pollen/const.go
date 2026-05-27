@@ -1,17 +1,17 @@
 package pollen
 
-// pollenLevel は Google Pollen API の花粉指数の値域を表す型
-type pollenLevel int
+// PollenLevel は Google Pollen API の花粉指数の値域を表す型
+type PollenLevel int
 
 const (
-	minPollenLevel pollenLevel = 0
-	maxPollenLevel pollenLevel = 5
+	MinPollenLevel PollenLevel = 0
+	MaxPollenLevel PollenLevel = 5
 )
 
-func (l pollenLevel) isValid() bool {
-	return l >= minPollenLevel && l <= maxPollenLevel
+func (l PollenLevel) IsValid() bool {
+	return l >= MinPollenLevel && l <= MaxPollenLevel
 }
 
-func (l pollenLevel) toInt() int {
+func (l PollenLevel) ToInt() int {
 	return int(l)
 }
