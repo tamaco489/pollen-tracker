@@ -37,7 +37,11 @@ func main() {
 	}
 
 	db := sql.OpenDB(connector)
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("close db: %v", err)
+		}
+	}()
 
 	if err := goose.SetDialect("sqlite3"); err != nil {
 		log.Fatalf("set dialect: %v", err)
