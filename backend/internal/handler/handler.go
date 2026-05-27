@@ -7,10 +7,10 @@ import (
 
 type Handler struct {
 	logger        *logger.Logger
-	pollenUseCase *usecase.UseCase
+	pollenUseCase usecase.GetForecastUseCase
 }
 
-func New(l *logger.Logger, pollenUseCase *usecase.UseCase) *Handler {
+func New(l *logger.Logger, pollenUseCase usecase.GetForecastUseCase) *Handler {
 	return &Handler{
 		logger:        l,
 		pollenUseCase: pollenUseCase,
