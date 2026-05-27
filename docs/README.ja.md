@@ -80,15 +80,13 @@ API サーバ起動
 make up
 ```
 
-DB マイグレーション実行
+DB マイグレーション
 
 ```bash
+# マイグレーション実行
 make migrate-up
-```
 
-マイグレーションファイルの新規作成
-
-```bash
+# マイグレーションファイルの新規作成
 make migrate-create name=<migration_name>
 ```
 

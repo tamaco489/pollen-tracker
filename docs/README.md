@@ -80,15 +80,13 @@ Start API server
 make up
 ```
 
-Run DB migrations
+DB migrations
 
 ```bash
+# Run migrations
 make migrate-up
-```
 
-Create a new migration file
-
-```bash
+# Create a new migration file
 make migrate-create name=<migration_name>
 ```
 
