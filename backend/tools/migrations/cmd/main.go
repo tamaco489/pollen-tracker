@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"flag"
 	"log"
-	"os"
 
 	"github.com/pressly/goose/v3"
 	"github.com/tursodatabase/libsql-client-go/libsql"
+
+	"github.com/tamaco489/pollen-tracker/backend/pkg/config"
 )
 
 const migrationsDir = "tools/migrations/sql"
@@ -17,21 +18,19 @@ func main() {
 	command := flag.String("command", "up", "goose command: up, down, status, version, reset")
 	flag.Parse()
 
-	dbURL := os.Getenv("TURSO_DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("TURSO_DATABASE_URL is required")
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("load config: %v", err)
 	}
-
-	isPrd := os.Getenv("APP_ENV") == "prd"
 
 	opts := []libsql.Option{
-		libsql.WithTls(isPrd),
+		libsql.WithTls(cfg.App.Env.IsProduction()),
 	}
-	if token := os.Getenv("TURSO_AUTH_TOKEN"); token != "" {
-		opts = append(opts, libsql.WithAuthToken(token))
+	if cfg.TursoDB.AuthToken != "" {
+		opts = append(opts, libsql.WithAuthToken(cfg.TursoDB.AuthToken))
 	}
 
-	connector, err := libsql.NewConnector(dbURL, opts...)
+	connector, err := libsql.NewConnector(cfg.TursoDB.URL, opts...)
 	if err != nil {
 		log.Fatalf("create connector: %v", err)
 	}
