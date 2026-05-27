@@ -31,7 +31,7 @@ func NewServerContainer(ctx context.Context) (*server.Server, error) {
 	pollenClient := google_pollen.NewPollenClient(cfg.Google.PollenAPIKey)
 	pollenUseCase := usecase.NewGetForecast(pollenClient)
 
-	h := handler.New(l, pollenUseCase)
+	h := handler.New(pollenUseCase)
 
 	srv, err := server.NewServer(ctx, l, cfg, conn, h)
 	if err != nil {

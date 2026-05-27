@@ -2,12 +2,9 @@ package handler
 
 import (
 	"context"
-	"errors"
 
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 	"github.com/tamaco489/pollen-tracker/backend/internal/usecase"
-	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
-	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -24,17 +21,7 @@ func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject)
 
 	forecast, err := h.pollenUseCase.GetForecast(ctx, input)
 	if err != nil {
-		if errors.Is(err, sentinel.ErrInvalidInput) {
-			return gen.GetPollen400JSONResponse{
-				Code:  httperror.CodeBadRequest.String(),
-				Error: httperror.MsgBadRequest.String(),
-			}, nil
-		}
-		h.logger.ErrorContext(ctx, "get forecast", "error", err)
-		return gen.GetPollen500JSONResponse{
-			Code:  httperror.CodeInternalError.String(),
-			Error: httperror.MsgInternalError.String(),
-		}, nil
+		return nil, err
 	}
 
 	return gen.GetPollen200JSONResponse{
