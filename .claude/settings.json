@@ -1,5 +1,5 @@
 {
-  "enabledMcpjsonServers": ["context7", "pollen-db"],
+  "enabledMcpjsonServers": ["context7", "libsql-local"],
   "permissions": {
     "allow": [
       "Bash(git *)",
@@ -10,12 +10,12 @@
       "mcp__github__issue_write",
       "mcp__github__add_issue_comment",
       "mcp__github__get_me",
-      "mcp__pollen-db__list-tables",
-      "mcp__pollen-db__read-query",
-      "mcp__pollen-db__write-query",
-      "mcp__pollen-db__create-table",
-      "mcp__pollen-db__alter-table",
-      "mcp__pollen-db__describe-table"
+      "mcp__libsql-local__list-tables",
+      "mcp__libsql-local__read-query",
+      "mcp__libsql-local__write-query",
+      "mcp__libsql-local__create-table",
+      "mcp__libsql-local__alter-table",
+      "mcp__libsql-local__describe-table"
     ]
   }
 }

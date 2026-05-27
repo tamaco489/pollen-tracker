@@ -1,3 +1,10 @@
+.PHONY: setup-tools
+setup-tools: ## 開発環境をセットアップする
+	go install github.com/pressly/goose/v3/cmd/goose@latest
+	go install github.com/tursodatabase/turso-cli/cmd/turso@latest
+	npm install -g @redocly/cli
+
+
 .PHONY: bundle-api gen-api preview-api
 
 OPENAPI_ROOT   := oas/oapi-base.yaml
@@ -48,7 +55,19 @@ logs: ## コンテナのログを表示する
 	docker compose logs -f pollen-api
 
 
-.PHONY: db-shell
+.PHONY: migrate-create migrate-up migrate-down migrate-status db-shell
+migrate-create: ## マイグレーションファイルを作成する (name=xxx が必須)
+	goose -dir tools/migrations/sql create $(name) sql
+
+migrate-up: ## DB マイグレーションを実行する
+	docker compose exec pollen-api go run ./tools/migrations/cmd/ -command up
+
+migrate-down: ## DB マイグレーションを1つロールバックする
+	docker compose exec pollen-api go run ./tools/migrations/cmd/ -command down
+
+migrate-status: ## マイグレーションの適用状況を確認する
+	docker compose exec pollen-api go run ./tools/migrations/cmd/ -command status
+
 db-shell: ## Turso DB シェルに接続する
 	turso db shell http://localhost:18081
 
