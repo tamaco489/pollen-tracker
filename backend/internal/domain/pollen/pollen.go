@@ -45,6 +45,7 @@ var PlantCodeToType = map[string]PollenType{
 	"CYPRESS_PINE":   PollenTypeCypress,
 	"GRASSES":        PollenTypeGrass,
 	"GRASS":          PollenTypeGrass,
+	"GRAMINALES":     PollenTypeGrass,
 	"RAGWEED":        PollenTypeRagweed,
 	"MUGWORT":        PollenTypeMugwort,
 }
