@@ -12,7 +12,7 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/pkg/config"
 )
 
-const migrationsDir = "tools/migrations/sql"
+const dir = "tools/migrations/sql"
 
 func main() {
 	command := flag.String("command", "up", "goose command: up, down, status, version, reset")
@@ -47,7 +47,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	if err := goose.RunContext(ctx, *command, db, migrationsDir); err != nil {
+	if err := goose.RunContext(ctx, *command, db, dir); err != nil {
 		log.Fatalf("goose %s: %v", *command, err)
 	}
 }
