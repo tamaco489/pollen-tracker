@@ -34,6 +34,10 @@ pollen-tracker/
 │   │   ├── paths/            # リソースごとのパス定義
 │   │   ├── oapi-base.yaml    # $ref リンク付きルート仕様
 │   │   └── oapi.yaml         # バンドル済み仕様 (自動生成)
+│   ├── tools/
+│   │   └── migrations/       # DB マイグレーション (goose)
+│   │       ├── cmd/          # マイグレーション実行ラッパー (go run)
+│   │       └── sql/          # goose SQL ファイル
 │   └── Makefile
 │
 ├── mobile/                   # React Native (Expo)
@@ -63,11 +67,27 @@ pollen-tracker/
 
 ### Backend
 
-api サーバ起動
+開発ツールのインストール
 
 ```bash
 cd backend
-docker compose up
+make setup-tools
+```
+
+API サーバ起動
+
+```bash
+make up
+```
+
+DB マイグレーション
+
+```bash
+# マイグレーション実行
+make migrate-up
+
+# マイグレーションファイルの新規作成
+make migrate-create name=<migration_name>
 ```
 
 コード生成 (OpenAPI 仕様 → Go)

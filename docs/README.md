@@ -34,6 +34,10 @@ pollen-tracker/
 │   │   ├── paths/            # Path definitions per resource
 │   │   ├── oapi-base.yaml    # Root spec with $ref links
 │   │   └── oapi.yaml         # Bundled spec (auto-generated)
+│   ├── tools/
+│   │   └── migrations/       # DB migrations (goose)
+│   │       ├── cmd/          # Migration runner (go run)
+│   │       └── sql/          # goose SQL files
 │   └── Makefile
 │
 ├── mobile/                   # React Native (Expo)
@@ -55,7 +59,7 @@ pollen-tracker/
 
 ### Prerequisites
 
-- Go 1.26.1 (managed via [asdf](https://asdf-vm.com/))
+- Go 1.26.3 (managed via [asdf](https://asdf-vm.com/))
 - Node.js 24.x (managed via asdf)
 - AWS CDK CLI (`npm install -g aws-cdk`)
 - Expo CLI (`npx expo`)
@@ -63,11 +67,27 @@ pollen-tracker/
 
 ### Backend
 
-Start API server
+Install development tools
 
 ```bash
 cd backend
-docker compose up
+make setup-tools
+```
+
+Start API server
+
+```bash
+make up
+```
+
+DB migrations
+
+```bash
+# Run migrations
+make migrate-up
+
+# Create a new migration file
+make migrate-create name=<migration_name>
 ```
 
 Code generation (OpenAPI spec → Go)

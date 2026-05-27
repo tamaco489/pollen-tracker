@@ -1,6 +1,6 @@
 module github.com/tamaco489/pollen-tracker/backend
 
-go 1.26.1
+go 1.26.3
 
 tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 
