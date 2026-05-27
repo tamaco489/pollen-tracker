@@ -29,6 +29,8 @@ type Server struct {
 func NewServer(ctx context.Context, l *logger.Logger, cfg *config.Config, conn *datastore.DB, h *handler.Handler) (*Server, error) {
 	e := echo.New()
 
+	e.HTTPErrorHandler = newErrorHandler(l)
+
 	// Recover を最初に追加して panic をサーバークラッシュではなく 500 に変換する
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(
