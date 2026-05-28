@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/tamaco489/pollen-tracker/backend/internal/domain/dto"
+	"github.com/tamaco489/pollen-tracker/backend/internal/dto"
 	"github.com/tamaco489/pollen-tracker/backend/internal/infrastructure/datastore/gen"
 )
 

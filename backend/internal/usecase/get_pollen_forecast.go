@@ -7,15 +7,15 @@ import (
 
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 
-	domain_pollen "github.com/tamaco489/pollen-tracker/backend/internal/domain/pollen"
-	google_pollen "github.com/tamaco489/pollen-tracker/backend/pkg/library/google/pollen"
+	"github.com/tamaco489/pollen-tracker/backend/internal/domain"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/library/google/pollen"
 )
 
 type getForecastUseCase struct {
-	svc google_pollen.PollenService
+	svc pollen.PollenService
 }
 
-func NewGetForecast(svc google_pollen.PollenService) GetForecastUseCase {
+func NewGetForecast(svc pollen.PollenService) GetForecastUseCase {
 	return &getForecastUseCase{svc: svc}
 }
 
@@ -32,7 +32,7 @@ const (
 )
 
 // GetForecast は指定座標・日付の花粉予報を取得してドメインエンティティで返す
-func (uc *getForecastUseCase) GetForecast(ctx context.Context, input GetForecastInput) (*domain_pollen.PollenForecast, error) {
+func (uc *getForecastUseCase) GetForecast(ctx context.Context, input GetForecastInput) (*domain.PollenForecast, error) {
 	if err := uc.validate(input.Lat, input.Lng); err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (uc *getForecastUseCase) GetForecast(ctx context.Context, input GetForecast
 	}
 
 	// Days は「今日から何日分取得するか」を指定する: 対象日付の index に到達するために +1 する
-	request := &google_pollen.ForecastRequest{
+	request := &pollen.ForecastRequest{
 		Lat:  input.Lat,
 		Lng:  input.Lng,
 		Days: dayOffset + 1,
@@ -75,11 +75,11 @@ func (uc *getForecastUseCase) GetForecast(ctx context.Context, input GetForecast
 
 	pollenType, level := uc.dominantPollen(resp.DailyForecasts[dayOffset].Plants)
 
-	return &domain_pollen.PollenForecast{
+	return &domain.PollenForecast{
 		Date:       targetDate,
 		Level:      level,
 		PollenType: pollenType,
-		SeasonInfo: domain_pollen.SeasonCalendar[pollenType],
+		SeasonInfo: domain.SeasonCalendar[pollenType],
 	}, nil
 }
 
@@ -93,12 +93,12 @@ func (uc *getForecastUseCase) validate(lat, lng float64) error {
 // dominantPollen は Plants の中から最も高い指数の花粉種を返す
 //
 // 対応外コードは無視し、該当なしの場合は CEDAR / level 0 をデフォルトとして返す
-func (uc *getForecastUseCase) dominantPollen(plants []google_pollen.Plant) (domain_pollen.PollenType, int) {
-	bestType := domain_pollen.PollenTypeCedar
-	bestLevel := google_pollen.MinPollenLevel.ToInt()
+func (uc *getForecastUseCase) dominantPollen(plants []pollen.Plant) (domain.PollenType, int) {
+	bestType := domain.PollenTypeCedar
+	bestLevel := pollen.MinPollenLevel.ToInt()
 
 	for _, p := range plants {
-		pt, ok := domain_pollen.PlantCodeToType[p.Code]
+		pt, ok := domain.PlantCodeToType[p.Code]
 		if !ok {
 			continue
 		}

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tamaco489/pollen-tracker/backend/internal/domain/dto"
+	"github.com/tamaco489/pollen-tracker/backend/internal/dto"
 	"github.com/tamaco489/pollen-tracker/backend/internal/infrastructure/datastore/gen"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/utils"

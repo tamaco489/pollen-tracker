@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/tamaco489/pollen-tracker/backend/internal/domain/dto"
+	"github.com/tamaco489/pollen-tracker/backend/internal/dto"
 )
 
 type GetSymptomsRepository interface {
