@@ -5,11 +5,13 @@ import (
 )
 
 type Handler struct {
-	pollenUseCase usecase.GetForecastUseCase
+	getPollenUseCase    usecase.GetForecastUseCase
+	postSymptomsUseCase usecase.PostSymptomsUseCase
 }
 
-func New(pollenUseCase usecase.GetForecastUseCase) *Handler {
+func NewHandler(getPollenUseCase usecase.GetForecastUseCase, postSymptomsUseCase usecase.PostSymptomsUseCase) *Handler {
 	return &Handler{
-		pollenUseCase: pollenUseCase,
+		getPollenUseCase:    getPollenUseCase,
+		postSymptomsUseCase: postSymptomsUseCase,
 	}
 }

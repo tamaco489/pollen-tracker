@@ -19,7 +19,7 @@ func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject)
 		input.Date = &t
 	}
 
-	forecast, err := h.pollenUseCase.GetForecast(ctx, input)
+	forecast, err := h.getPollenUseCase.GetForecast(ctx, input)
 	if err != nil {
 		return nil, err
 	}
