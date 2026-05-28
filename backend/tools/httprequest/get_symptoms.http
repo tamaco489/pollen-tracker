@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:18080
+
+###
+# GET /symptoms — 正常系: デフォルト (過去30日)
+GET {{baseUrl}}/symptoms
+
+###
+# GET /symptoms — 正常系: from/to 指定
+GET {{baseUrl}}/symptoms?from=2026-01-01&to=2026-05-31
+
+###
+# GET /symptoms — 正常系: データなし範囲 → 空配列 []
+GET {{baseUrl}}/symptoms?from=2025-01-01&to=2025-12-31
+
+###
+# GET /symptoms — 正常系: 1日指定 (from = to)
+GET {{baseUrl}}/symptoms?from=2026-05-29&to=2026-05-29
