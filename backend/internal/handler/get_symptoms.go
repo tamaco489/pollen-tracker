@@ -15,18 +15,7 @@ func (h *Handler) GetSymptoms(_ context.Context, _ gen.GetSymptomsRequestObject)
 	switch rand.Intn(3) {
 	case 0:
 		return gen.GetSymptoms200JSONResponse{
-			Items: []struct {
-				CreatedAt      time.Time          `json:"created_at"`
-				Date           openapi_types.Date `json:"date"`
-				Id             openapi_types.UUID `json:"id"`
-				Itchy          int32              `json:"itchy"`
-				Note           string             `json:"note"`
-				PollenLevel    int32              `json:"pollen_level"`
-				Runny          int32              `json:"runny"`
-				Sneezing       int32              `json:"sneezing"`
-				TookMedication bool               `json:"took_medication"`
-				UpdatedAt      time.Time          `json:"updated_at"`
-			}{
+			Items: []gen.SymptomResponse{
 				{
 					CreatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
 					Date:           openapi_types.Date{Time: time.Date(2026, 5, 25, 0, 0, 0, 0, time.UTC)},
