@@ -9,8 +9,8 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-func (h *Handler) PostSymptoms(ctx context.Context, req gen.PostSymptomsRequestObject) (gen.PostSymptomsResponseObject, error) {
-	input := usecase.PostSymptomsInput{
+func (h *Handler) CreateSymptoms(ctx context.Context, req gen.CreateSymptomsRequestObject) (gen.CreateSymptomsResponseObject, error) {
+	input := usecase.CreateSymptomsInput{
 		Date:           req.Body.Date.Time,
 		Sneezing:       req.Body.Sneezing,
 		Runny:          req.Body.Runny,
@@ -20,12 +20,12 @@ func (h *Handler) PostSymptoms(ctx context.Context, req gen.PostSymptomsRequestO
 		Note:           req.Body.Note,
 	}
 
-	symptom, err := h.postSymptomsUseCase.PostSymptoms(ctx, input)
+	symptom, err := h.createSymptomsUseCase.CreateSymptoms(ctx, input)
 	if err != nil {
 		return nil, err
 	}
 
-	return gen.PostSymptoms201JSONResponse{
+	return gen.CreateSymptoms201JSONResponse{
 		Id:             openapi_types.UUID(symptom.ID),
 		Date:           openapi_types.Date{Time: symptom.Date},
 		Sneezing:       symptom.Sneezing,

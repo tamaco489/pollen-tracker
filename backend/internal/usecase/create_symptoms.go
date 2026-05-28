@@ -12,12 +12,12 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 )
 
-type postSymptomsUseCase struct {
-	repo datastore.PostSymptomsRepository
+type createSymptomsUseCase struct {
+	repo datastore.CreateSymptomsRepository
 }
 
-func NewPostSymptoms(repo datastore.PostSymptomsRepository) PostSymptomsUseCase {
-	return &postSymptomsUseCase{repo: repo}
+func NewCreateSymptoms(repo datastore.CreateSymptomsRepository) CreateSymptomsUseCase {
+	return &createSymptomsUseCase{repo: repo}
 }
 
 const (
@@ -26,7 +26,7 @@ const (
 	noteMaxChars    = 200
 )
 
-func (uc *postSymptomsUseCase) PostSymptoms(ctx context.Context, input PostSymptomsInput) (*CreateSymptomsOutput, error) {
+func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input CreateSymptomsInput) (*CreateSymptomsOutput, error) {
 	if err := uc.validate(input); err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (uc *postSymptomsUseCase) PostSymptoms(ctx context.Context, input PostSympt
 	}, nil
 }
 
-func (uc *postSymptomsUseCase) validate(input PostSymptomsInput) error {
+func (uc *createSymptomsUseCase) validate(input CreateSymptomsInput) error {
 	for _, v := range []struct {
 		val  int32
 		name string

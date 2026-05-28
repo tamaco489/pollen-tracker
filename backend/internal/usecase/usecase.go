@@ -10,8 +10,8 @@ type GetForecastUseCase interface {
 	GetForecast(ctx context.Context, input GetForecastInput) (*domain.PollenForecast, error)
 }
 
-type PostSymptomsUseCase interface {
-	PostSymptoms(ctx context.Context, input PostSymptomsInput) (*CreateSymptomsOutput, error)
+type CreateSymptomsUseCase interface {
+	CreateSymptoms(ctx context.Context, input CreateSymptomsInput) (*CreateSymptomsOutput, error)
 }
 
 type GetSymptomsUseCase interface {

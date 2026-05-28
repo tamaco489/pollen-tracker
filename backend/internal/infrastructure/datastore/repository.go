@@ -11,6 +11,6 @@ type GetSymptomsRepository interface {
 	GetSymptoms(ctx context.Context, from, to time.Time) ([]dto.GetSymptoms, error)
 }
 
-type PostSymptomsRepository interface {
+type CreateSymptomsRepository interface {
 	InsertSymptom(ctx context.Context, s *dto.CreateSymptoms) error
 }
