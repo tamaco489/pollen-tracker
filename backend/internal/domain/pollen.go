@@ -1,4 +1,4 @@
-package pollen
+package domain
 
 import "time"
 

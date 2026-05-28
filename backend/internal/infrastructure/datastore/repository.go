@@ -2,10 +2,15 @@ package datastore
 
 import (
 	"context"
+	"time"
 
-	"github.com/tamaco489/pollen-tracker/backend/internal/domain/symptoms"
+	"github.com/tamaco489/pollen-tracker/backend/internal/dto"
 )
 
-type Repository interface {
-	Insert(ctx context.Context, s *symptoms.Symptom) error
+type GetSymptomsRepository interface {
+	GetSymptoms(ctx context.Context, from, to time.Time) ([]dto.GetSymptoms, error)
+}
+
+type CreateSymptomsRepository interface {
+	InsertSymptom(ctx context.Context, s *dto.CreateSymptoms) error
 }

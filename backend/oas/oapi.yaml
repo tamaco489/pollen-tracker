@@ -19,18 +19,18 @@ paths:
       operationId: GetHealth
       security: []
       responses:
-        "200":
+        '200':
           description: サービス稼働中
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthResponse"
-        "500":
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -49,14 +49,14 @@ paths:
           schema:
             type: number
             format: double
-          description: "緯度 (例: 35.7122)"
+          description: '緯度 (例: 35.7122)'
         - name: lng
           in: query
           required: true
           schema:
             type: number
             format: double
-          description: "経度 (例: 139.7811)"
+          description: '経度 (例: 139.7811)'
         - name: date
           in: query
           required: false
@@ -65,27 +65,27 @@ paths:
             format: date
           description: 取得日 (YYYY-MM-DD)。省略時は当日
       responses:
-        "200":
+        '200':
           description: 花粉レベルの取得成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PollenResponse"
-        "400":
+                $ref: '#/components/schemas/PollenResponse'
+        '400':
           description: パラメータ不正
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BadRequestError"
+                $ref: '#/components/schemas/BadRequestError'
               example:
                 error: Invalid query parameter
                 code: BAD_REQUEST
-        "500":
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -113,27 +113,27 @@ paths:
             format: date
           description: 取得終了日 (YYYY-MM-DD)。省略時は当日
       responses:
-        "200":
+        '200':
           description: 症状ログ一覧の取得成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SymptomsListResponse"
-        "400":
+                $ref: '#/components/schemas/SymptomsListResponse'
+        '400':
           description: パラメータ不正
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BadRequestError"
+                $ref: '#/components/schemas/BadRequestError'
               example:
                 error: Invalid query parameter
                 code: BAD_REQUEST
-        "500":
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -143,44 +143,44 @@ paths:
         - 指定日のくしゃみ・鼻水・目のかゆみの強度 (1〜5) と花粉レベルを記録する
         - 同日付のレコードが既に存在する場合は 409 を返す
         - took_medication は省略時 false、note は省略時空文字列をデフォルト値として送信する
-      operationId: PostSymptoms
+      operationId: CreateSymptoms
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SymptomRequest"
+              $ref: '#/components/schemas/SymptomRequest'
       responses:
-        "201":
+        '201':
           description: 症状ログの保存成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SymptomResponse"
-        "400":
+                $ref: '#/components/schemas/SymptomResponse'
+        '400':
           description: パラメータ不正
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BadRequestError"
+                $ref: '#/components/schemas/BadRequestError'
               example:
                 error: Invalid request body
                 code: BAD_REQUEST
-        "409":
+        '409':
           description: 同日付のレコードが既に存在する
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ConflictError"
+                $ref: '#/components/schemas/ConflictError'
               example:
                 error: Symptom log for this date already exists
                 code: CONFLICT
-        "500":
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -200,27 +200,27 @@ paths:
             format: uuid
           description: 取得対象の症状ログ ID (UUID v7)
       responses:
-        "200":
+        '200':
           description: 症状ログの取得成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SymptomResponse"
-        "404":
+                $ref: '#/components/schemas/SymptomResponse'
+        '404':
           description: 指定 UUID の症状ログが存在しない
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotFoundError"
+                $ref: '#/components/schemas/NotFoundError'
               example:
                 error: Symptom log not found
                 code: NOT_FOUND
-        "500":
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -244,38 +244,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SymptomUpdateRequest"
+              $ref: '#/components/schemas/SymptomUpdateRequest'
       responses:
-        "200":
+        '200':
           description: 症状ログの更新成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SymptomResponse"
-        "400":
+                $ref: '#/components/schemas/SymptomResponse'
+        '400':
           description: パラメータ不正
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BadRequestError"
+                $ref: '#/components/schemas/BadRequestError'
               example:
                 error: Invalid request body
                 code: BAD_REQUEST
-        "404":
+        '404':
           description: 指定 UUID の症状ログが存在しない
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotFoundError"
+                $ref: '#/components/schemas/NotFoundError'
               example:
                 error: Symptom log not found
                 code: NOT_FOUND
-        "500":
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -295,23 +295,23 @@ paths:
             format: uuid
           description: 削除対象の症状ログ ID (UUID v7)
       responses:
-        "204":
+        '204':
           description: 症状ログの削除成功
-        "404":
+        '404':
           description: 指定 UUID の症状ログが存在しない
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotFoundError"
+                $ref: '#/components/schemas/NotFoundError'
               example:
                 error: Symptom log not found
                 code: NOT_FOUND
-        "500":
+        '500':
           description: サーバーエラー
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InternalServerError"
+                $ref: '#/components/schemas/InternalServerError'
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -346,7 +346,7 @@ components:
           description: エラーコード
     InternalServerError:
       allOf:
-        - $ref: "#/components/schemas/ErrorResponse"
+        - $ref: '#/components/schemas/ErrorResponse'
       properties:
         code:
           type: string
@@ -361,7 +361,7 @@ components:
       properties:
         peak:
           type: string
-          description: "ピークシーズン (例: 2月〜4月)"
+          description: 'ピークシーズン (例: 2月〜4月)'
         characteristics:
           type: string
           description: 特徴・症状の傾向
@@ -385,7 +385,7 @@ components:
           format: int32
           minimum: 1
           maximum: 5
-          description: "花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)"
+          description: '花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)'
         pollen_type:
           type: string
           enum:
@@ -394,12 +394,12 @@ components:
             - RAGWEED
             - GRASS
             - MUGWORT
-          description: "現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)"
+          description: '現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)'
         season_info:
-          $ref: "#/components/schemas/SeasonInfo"
+          $ref: '#/components/schemas/SeasonInfo'
     BadRequestError:
       allOf:
-        - $ref: "#/components/schemas/ErrorResponse"
+        - $ref: '#/components/schemas/ErrorResponse'
       properties:
         code:
           type: string
@@ -452,7 +452,7 @@ components:
           default: false
         note:
           type: string
-          default: ""
+          default: ''
           maxLength: 200
         created_at:
           type: string
@@ -471,7 +471,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/SymptomResponse"
+            $ref: '#/components/schemas/SymptomResponse'
         total:
           type: integer
           format: int32
@@ -521,12 +521,12 @@ components:
           description: その日薬を服用したか。省略時は false として送信
         note:
           type: string
-          default: ""
+          default: ''
           maxLength: 200
           description: フリーメモ (最大 200 文字)。省略時は空文字として送信
     ConflictError:
       allOf:
-        - $ref: "#/components/schemas/ErrorResponse"
+        - $ref: '#/components/schemas/ErrorResponse'
       properties:
         code:
           type: string
@@ -534,7 +534,7 @@ components:
             - CONFLICT
     NotFoundError:
       allOf:
-        - $ref: "#/components/schemas/ErrorResponse"
+        - $ref: '#/components/schemas/ErrorResponse'
       properties:
         code:
           type: string
@@ -580,6 +580,6 @@ components:
           description: その日薬を服用したか。省略時は false として送信
         note:
           type: string
-          default: ""
+          default: ''
           maxLength: 200
           description: フリーメモ (最大 200 文字)。省略時は空文字として送信

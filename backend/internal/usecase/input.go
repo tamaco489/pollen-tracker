@@ -8,7 +8,7 @@ type GetForecastInput struct {
 	Date *time.Time
 }
 
-type PostSymptomsInput struct {
+type CreateSymptomsInput struct {
 	Date           time.Time
 	Sneezing       int32
 	Runny          int32
@@ -16,4 +16,9 @@ type PostSymptomsInput struct {
 	PollenLevel    int32
 	TookMedication bool
 	Note           string
+}
+
+type GetSymptomsInput struct {
+	From time.Time
+	To   time.Time
 }

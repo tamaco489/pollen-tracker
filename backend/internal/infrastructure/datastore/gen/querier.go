@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	GetSymptoms(ctx context.Context, db DBTX, arg GetSymptomsParams) ([]Symptom, error)
 	InsertSymptom(ctx context.Context, db DBTX, arg InsertSymptomParams) error
 }
 

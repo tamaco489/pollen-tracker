@@ -2,44 +2,49 @@ package handler
 
 import (
 	"context"
-	"math/rand"
-	"time"
 
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
-	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
+	"github.com/tamaco489/pollen-tracker/backend/internal/usecase"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/utils"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-func (h *Handler) GetSymptoms(_ context.Context, _ gen.GetSymptomsRequestObject) (gen.GetSymptomsResponseObject, error) {
-	switch rand.Intn(3) {
-	case 0:
-		return gen.GetSymptoms200JSONResponse{
-			Items: []gen.SymptomResponse{
-				{
-					CreatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
-					Date:           openapi_types.Date{Time: time.Date(2026, 5, 25, 0, 0, 0, 0, time.UTC)},
-					Id:             openapi_types.UUID{},
-					Itchy:          2,
-					Note:           "stub response",
-					PollenLevel:    3,
-					Runny:          3,
-					Sneezing:       2,
-					TookMedication: true,
-					UpdatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
-				},
-			},
-			Total: 1,
-		}, nil
-	case 1:
-		return gen.GetSymptoms400JSONResponse{
-			Code:  httperror.CodeBadRequest.String(),
-			Error: httperror.MsgBadRequest.String(),
-		}, nil
-	default:
-		return gen.GetSymptoms500JSONResponse{
-			Code:  httperror.CodeInternalError.String(),
-			Error: httperror.MsgInternalError.String(),
-		}, nil
+func (h *Handler) GetSymptoms(ctx context.Context, req gen.GetSymptomsRequestObject) (gen.GetSymptomsResponseObject, error) {
+	from, to := utils.DefaultDateRange()
+	if req.Params.From != nil {
+		from = req.Params.From.Time
 	}
+	if req.Params.To != nil {
+		to = req.Params.To.Time
+	}
+
+	list, err := h.getSymptomsUseCase.GetSymptoms(ctx, usecase.GetSymptomsInput{
+		From: from,
+		To:   to,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]gen.SymptomResponse, 0, len(list))
+	for _, s := range list {
+		items = append(items, gen.SymptomResponse{
+			Id:             openapi_types.UUID(s.ID),
+			Date:           openapi_types.Date{Time: s.Date},
+			Sneezing:       s.Sneezing,
+			Runny:          s.Runny,
+			Itchy:          s.Itchy,
+			PollenLevel:    s.PollenLevel,
+			TookMedication: s.TookMedication,
+			Note:           s.Note,
+			CreatedAt:      s.CreatedAt,
+			UpdatedAt:      s.UpdatedAt,
+		})
+	}
+
+	return gen.GetSymptoms200JSONResponse{
+		Items: items,
+		Total: int32(len(items)),
+	}, nil
 }

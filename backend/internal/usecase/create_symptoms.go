@@ -7,17 +7,17 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/tamaco489/pollen-tracker/backend/internal/domain/symptoms"
+	"github.com/tamaco489/pollen-tracker/backend/internal/dto"
 	"github.com/tamaco489/pollen-tracker/backend/internal/infrastructure/datastore"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 )
 
-type postSymptomsUseCase struct {
-	repo datastore.Repository
+type createSymptomsUseCase struct {
+	repo datastore.CreateSymptomsRepository
 }
 
-func NewPostSymptoms(repo datastore.Repository) PostSymptomsUseCase {
-	return &postSymptomsUseCase{repo: repo}
+func NewCreateSymptoms(repo datastore.CreateSymptomsRepository) CreateSymptomsUseCase {
+	return &createSymptomsUseCase{repo: repo}
 }
 
 const (
@@ -26,7 +26,7 @@ const (
 	noteMaxChars    = 200
 )
 
-func (uc *postSymptomsUseCase) PostSymptoms(ctx context.Context, input PostSymptomsInput) (*symptoms.Symptom, error) {
+func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input CreateSymptomsInput) (*CreateSymptomsOutput, error) {
 	if err := uc.validate(input); err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (uc *postSymptomsUseCase) PostSymptoms(ctx context.Context, input PostSympt
 	}
 
 	now := time.Now().UTC()
-	s := &symptoms.Symptom{
+	s := &dto.CreateSymptoms{
 		ID:             id,
 		Date:           input.Date.UTC().Truncate(24 * time.Hour),
 		Sneezing:       input.Sneezing,
@@ -50,14 +50,25 @@ func (uc *postSymptomsUseCase) PostSymptoms(ctx context.Context, input PostSympt
 		UpdatedAt:      now,
 	}
 
-	if err := uc.repo.Insert(ctx, s); err != nil {
+	if err := uc.repo.InsertSymptom(ctx, s); err != nil {
 		return nil, err
 	}
 
-	return s, nil
+	return &CreateSymptomsOutput{
+		ID:             s.ID,
+		Date:           s.Date,
+		Sneezing:       s.Sneezing,
+		Runny:          s.Runny,
+		Itchy:          s.Itchy,
+		PollenLevel:    s.PollenLevel,
+		TookMedication: s.TookMedication,
+		Note:           s.Note,
+		CreatedAt:      s.CreatedAt,
+		UpdatedAt:      s.UpdatedAt,
+	}, nil
 }
 
-func (uc *postSymptomsUseCase) validate(input PostSymptomsInput) error {
+func (uc *createSymptomsUseCase) validate(input CreateSymptomsInput) error {
 	for _, v := range []struct {
 		val  int32
 		name string

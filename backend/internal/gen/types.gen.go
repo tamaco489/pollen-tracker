@@ -211,8 +211,8 @@ type GetSymptomsParams struct {
 	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
 }
 
-// PostSymptomsJSONRequestBody defines body for PostSymptoms for application/json ContentType.
-type PostSymptomsJSONRequestBody = SymptomRequest
+// CreateSymptomsJSONRequestBody defines body for CreateSymptoms for application/json ContentType.
+type CreateSymptomsJSONRequestBody = SymptomRequest
 
 // PutSymptomsIdJSONRequestBody defines body for PutSymptomsId for application/json ContentType.
 type PutSymptomsIdJSONRequestBody = SymptomUpdateRequest
