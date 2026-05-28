@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/tamaco489/pollen-tracker/backend/internal/domain/pollen"
-	"github.com/tamaco489/pollen-tracker/backend/internal/domain/symptoms"
 )
 
 type GetForecastUseCase interface {
@@ -12,9 +11,9 @@ type GetForecastUseCase interface {
 }
 
 type PostSymptomsUseCase interface {
-	PostSymptoms(ctx context.Context, input PostSymptomsInput) (*symptoms.Symptom, error)
+	PostSymptoms(ctx context.Context, input PostSymptomsInput) (*CreateSymptomsOutput, error)
 }
 
 type GetSymptomsUseCase interface {
-	GetSymptoms(ctx context.Context, input GetSymptomsInput) ([]symptoms.Symptom, error)
+	GetSymptoms(ctx context.Context, input GetSymptomsInput) ([]GetSymptomsOutput, error)
 }
