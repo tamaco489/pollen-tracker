@@ -28,7 +28,7 @@ type ServerInterface interface {
 	GetSymptoms(ctx *echo.Context, params GetSymptomsParams) error
 	// 症状ログを保存する
 	// (POST /symptoms)
-	PostSymptoms(ctx *echo.Context) error
+	CreateSymptoms(ctx *echo.Context) error
 	// 症状ログを削除する
 	// (DELETE /symptoms/{id})
 	DeleteSymptomsId(ctx *echo.Context, id openapi_types.UUID) error
@@ -115,14 +115,14 @@ func (w *ServerInterfaceWrapper) GetSymptoms(ctx *echo.Context) error {
 	return err
 }
 
-// PostSymptoms converts echo context to params.
-func (w *ServerInterfaceWrapper) PostSymptoms(ctx *echo.Context) error {
+// CreateSymptoms converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateSymptoms(ctx *echo.Context) error {
 	var err error
 
 	ctx.Set(string(ApiKeyAuthScopes), []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.PostSymptoms(ctx)
+	err = w.Handler.CreateSymptoms(ctx)
 	return err
 }
 
@@ -230,7 +230,7 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 	router.GET(options.BaseURL+"/health", wrapper.GetHealth, options.OperationMiddlewares["GetHealth"]...)
 	router.GET(options.BaseURL+"/pollen", wrapper.GetPollen, options.OperationMiddlewares["GetPollen"]...)
 	router.GET(options.BaseURL+"/symptoms", wrapper.GetSymptoms, options.OperationMiddlewares["GetSymptoms"]...)
-	router.POST(options.BaseURL+"/symptoms", wrapper.PostSymptoms, options.OperationMiddlewares["PostSymptoms"]...)
+	router.POST(options.BaseURL+"/symptoms", wrapper.CreateSymptoms, options.OperationMiddlewares["CreateSymptoms"]...)
 	router.DELETE(options.BaseURL+"/symptoms/:id", wrapper.DeleteSymptomsId, options.OperationMiddlewares["DeleteSymptomsId"]...)
 	router.GET(options.BaseURL+"/symptoms/:id", wrapper.GetSymptomsId, options.OperationMiddlewares["GetSymptomsId"]...)
 	router.PUT(options.BaseURL+"/symptoms/:id", wrapper.PutSymptomsId, options.OperationMiddlewares["PutSymptomsId"]...)
@@ -372,17 +372,17 @@ func (response GetSymptoms500JSONResponse) VisitGetSymptomsResponse(w http.Respo
 	return err
 }
 
-type PostSymptomsRequestObject struct {
-	Body *PostSymptomsJSONRequestBody
+type CreateSymptomsRequestObject struct {
+	Body *CreateSymptomsJSONRequestBody
 }
 
-type PostSymptomsResponseObject interface {
-	VisitPostSymptomsResponse(w http.ResponseWriter) error
+type CreateSymptomsResponseObject interface {
+	VisitCreateSymptomsResponse(w http.ResponseWriter) error
 }
 
-type PostSymptoms201JSONResponse SymptomResponse
+type CreateSymptoms201JSONResponse SymptomResponse
 
-func (response PostSymptoms201JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
+func (response CreateSymptoms201JSONResponse) VisitCreateSymptomsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -394,9 +394,9 @@ func (response PostSymptoms201JSONResponse) VisitPostSymptomsResponse(w http.Res
 	return err
 }
 
-type PostSymptoms400JSONResponse BadRequestError
+type CreateSymptoms400JSONResponse BadRequestError
 
-func (response PostSymptoms400JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
+func (response CreateSymptoms400JSONResponse) VisitCreateSymptomsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -408,9 +408,9 @@ func (response PostSymptoms400JSONResponse) VisitPostSymptomsResponse(w http.Res
 	return err
 }
 
-type PostSymptoms409JSONResponse ConflictError
+type CreateSymptoms409JSONResponse ConflictError
 
-func (response PostSymptoms409JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
+func (response CreateSymptoms409JSONResponse) VisitCreateSymptomsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -422,9 +422,9 @@ func (response PostSymptoms409JSONResponse) VisitPostSymptomsResponse(w http.Res
 	return err
 }
 
-type PostSymptoms500JSONResponse InternalServerError
+type CreateSymptoms500JSONResponse InternalServerError
 
-func (response PostSymptoms500JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
+func (response CreateSymptoms500JSONResponse) VisitCreateSymptomsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -608,7 +608,7 @@ type StrictServerInterface interface {
 	GetSymptoms(ctx context.Context, request GetSymptomsRequestObject) (GetSymptomsResponseObject, error)
 	// 症状ログを保存する
 	// (POST /symptoms)
-	PostSymptoms(ctx context.Context, request PostSymptomsRequestObject) (PostSymptomsResponseObject, error)
+	CreateSymptoms(ctx context.Context, request CreateSymptomsRequestObject) (CreateSymptomsResponseObject, error)
 	// 症状ログを削除する
 	// (DELETE /symptoms/{id})
 	DeleteSymptomsId(ctx context.Context, request DeleteSymptomsIdRequestObject) (DeleteSymptomsIdResponseObject, error)
@@ -705,29 +705,29 @@ func (sh *strictHandler) GetSymptoms(ctx *echo.Context, params GetSymptomsParams
 	return nil
 }
 
-// PostSymptoms operation middleware
-func (sh *strictHandler) PostSymptoms(ctx *echo.Context) error {
-	var request PostSymptomsRequestObject
+// CreateSymptoms operation middleware
+func (sh *strictHandler) CreateSymptoms(ctx *echo.Context) error {
+	var request CreateSymptomsRequestObject
 
-	var body PostSymptomsJSONRequestBody
+	var body CreateSymptomsJSONRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
 	request.Body = &body
 
 	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.PostSymptoms(ctx.Request().Context(), request.(PostSymptomsRequestObject))
+		return sh.ssi.CreateSymptoms(ctx.Request().Context(), request.(CreateSymptomsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostSymptoms")
+		handler = middleware(handler, "CreateSymptoms")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(PostSymptomsResponseObject); ok {
-		return validResponse.VisitPostSymptomsResponse(ctx.Response())
+	} else if validResponse, ok := response.(CreateSymptomsResponseObject); ok {
+		return validResponse.VisitCreateSymptomsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

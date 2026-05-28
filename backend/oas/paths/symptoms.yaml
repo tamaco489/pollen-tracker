@@ -53,7 +53,7 @@ symptoms:
       - 指定日のくしゃみ・鼻水・目のかゆみの強度 (1〜5) と花粉レベルを記録する
       - 同日付のレコードが既に存在する場合は 409 を返す
       - took_medication は省略時 false、note は省略時空文字列をデフォルト値として送信する
-    operationId: PostSymptoms
+    operationId: CreateSymptoms
     requestBody:
       required: true
       content:
