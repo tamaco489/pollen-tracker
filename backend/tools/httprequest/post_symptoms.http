@@ -1,0 +1,197 @@
+@baseUrl = http://localhost:18080
+
+###
+# POST /symptoms — 正常系: 全フィールド指定
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-05-29",
+  "sneezing": 3,
+  "runny": 2,
+  "itchy": 1,
+  "pollen_level": 4,
+  "took_medication": true,
+  "note": "テストメモ"
+}
+
+###
+# POST /symptoms — 正常系: 境界下限 (各値 1, note 空文字, 服薬なし)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-05-30",
+  "sneezing": 1,
+  "runny": 1,
+  "itchy": 1,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 正常系: 境界上限 (各値 5)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-05-31",
+  "sneezing": 5,
+  "runny": 5,
+  "itchy": 5,
+  "pollen_level": 5,
+  "took_medication": true,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: sneezing = 0 (下限未満)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 0,
+  "runny": 1,
+  "itchy": 1,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: sneezing = 6 (上限超過)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 6,
+  "runny": 1,
+  "itchy": 1,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: runny = 0 (下限未満)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 0,
+  "itchy": 1,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: runny = 6 (上限超過)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 6,
+  "itchy": 1,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: itchy = 0 (下限未満)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 1,
+  "itchy": 0,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: itchy = 6 (上限超過)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 1,
+  "itchy": 6,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: pollen_level = 0 (下限未満)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 1,
+  "itchy": 1,
+  "pollen_level": 0,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: pollen_level = 6 (上限超過)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 1,
+  "itchy": 1,
+  "pollen_level": 6,
+  "took_medication": false,
+  "note": ""
+}
+
+###
+# POST /symptoms — 400: note が 201 文字 (上限超過)
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-06-01",
+  "sneezing": 1,
+  "runny": 1,
+  "itchy": 1,
+  "pollen_level": 1,
+  "took_medication": false,
+  "note": "あいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあいうえおあ"
+}
+
+###
+# POST /symptoms — 409: 同一日付で重複登録
+# 事前に同じ date でレコードが存在している状態で実行する
+POST {{baseUrl}}/symptoms
+Content-Type: application/json
+
+{
+  "date": "2026-05-29",
+  "sneezing": 3,
+  "runny": 2,
+  "itchy": 1,
+  "pollen_level": 4,
+  "took_medication": true,
+  "note": "重複テスト"
+}
