@@ -9,18 +9,74 @@ import (
 	"context"
 )
 
+const getSymptoms = `-- name: GetSymptoms :many
+SELECT
+    "id",
+    "date",
+    "sneezing",
+    "runny",
+    "itchy",
+    "pollen_level",
+    "took_medication",
+    "note",
+    "created_at",
+    "updated_at"
+FROM "symptoms"
+WHERE "date" BETWEEN ?1 AND ?2
+ORDER BY "date" DESC
+`
+
+type GetSymptomsParams struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+func (q *Queries) GetSymptoms(ctx context.Context, db DBTX, arg GetSymptomsParams) ([]Symptom, error) {
+	rows, err := db.QueryContext(ctx, getSymptoms, arg.From, arg.To)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Symptom
+	for rows.Next() {
+		var i Symptom
+		if err := rows.Scan(
+			&i.ID,
+			&i.Date,
+			&i.Sneezing,
+			&i.Runny,
+			&i.Itchy,
+			&i.PollenLevel,
+			&i.TookMedication,
+			&i.Note,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertSymptom = `-- name: InsertSymptom :exec
-INSERT INTO symptoms (
-    id,
-    date,
-    sneezing,
-    runny,
-    itchy,
-    pollen_level,
-    took_medication,
-    note,
-    created_at,
-    updated_at
+INSERT INTO "symptoms" (
+    "id",
+    "date",
+    "sneezing",
+    "runny",
+    "itchy",
+    "pollen_level",
+    "took_medication",
+    "note",
+    "created_at",
+    "updated_at"
 ) VALUES (
     ?1,
     ?2,
