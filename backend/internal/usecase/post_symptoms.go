@@ -13,10 +13,10 @@ import (
 )
 
 type postSymptomsUseCase struct {
-	repo datastore.Repository
+	repo datastore.PostSymptomsRepository
 }
 
-func NewPostSymptoms(repo datastore.Repository) PostSymptomsUseCase {
+func NewPostSymptoms(repo datastore.PostSymptomsRepository) PostSymptomsUseCase {
 	return &postSymptomsUseCase{repo: repo}
 }
 

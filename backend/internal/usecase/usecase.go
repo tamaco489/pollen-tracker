@@ -14,3 +14,7 @@ type GetForecastUseCase interface {
 type PostSymptomsUseCase interface {
 	PostSymptoms(ctx context.Context, input PostSymptomsInput) (*symptoms.Symptom, error)
 }
+
+type GetSymptomsUseCase interface {
+	GetSymptoms(ctx context.Context, input GetSymptomsInput) ([]symptoms.Symptom, error)
+}

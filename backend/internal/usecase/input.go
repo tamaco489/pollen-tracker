@@ -17,3 +17,8 @@ type PostSymptomsInput struct {
 	TookMedication bool
 	Note           string
 }
+
+type GetSymptomsInput struct {
+	From time.Time
+	To   time.Time
+}
