@@ -19,42 +19,18 @@ paths:
       operationId: GetHealth
       security: []
       responses:
-        '200':
+        "200":
           description: サービス稼働中
           content:
             application/json:
               schema:
-                type: object
-                required: &ref_10
-                  - status
-                properties: &ref_11
-                  status:
-                    type: string
-                    enum:
-                      - ok
-                    description: サービスの稼働状態
-        '500':
+                $ref: "#/components/schemas/HealthResponse"
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: &ref_2
-                  - type: object
-                    required: &ref_0
-                      - error
-                      - code
-                    properties: &ref_1
-                      error:
-                        type: string
-                        description: エラー内容の説明文 (英語)
-                      code:
-                        type: string
-                        description: エラーコード
-                properties: &ref_3
-                  code:
-                    type: string
-                    enum:
-                      - INTERNAL_SERVER_ERROR
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -73,14 +49,14 @@ paths:
           schema:
             type: number
             format: double
-          description: '緯度 (例: 35.7122)'
+          description: "緯度 (例: 35.7122)"
         - name: lng
           in: query
           required: true
           schema:
             type: number
             format: double
-          description: '経度 (例: 139.7811)'
+          description: "経度 (例: 139.7811)"
         - name: date
           in: query
           required: false
@@ -89,77 +65,27 @@ paths:
             format: date
           description: 取得日 (YYYY-MM-DD)。省略時は当日
       responses:
-        '200':
+        "200":
           description: 花粉レベルの取得成功
           content:
             application/json:
               schema:
-                type: object
-                required: &ref_14
-                  - date
-                  - level
-                  - pollen_type
-                  - season_info
-                properties: &ref_15
-                  date:
-                    type: string
-                    format: date
-                    description: 取得日 (YYYY-MM-DD)
-                  level:
-                    type: integer
-                    format: int32
-                    minimum: 1
-                    maximum: 5
-                    description: '花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)'
-                  pollen_type:
-                    type: string
-                    enum:
-                      - CEDAR
-                      - CYPRESS
-                      - RAGWEED
-                      - GRASS
-                      - MUGWORT
-                    description: '現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)'
-                  season_info:
-                    type: object
-                    required: &ref_12
-                      - peak
-                      - characteristics
-                      - region
-                    properties: &ref_13
-                      peak:
-                        type: string
-                        description: 'ピークシーズン (例: 2月〜4月)'
-                      characteristics:
-                        type: string
-                        description: 特徴・症状の傾向
-                      region:
-                        type: string
-                        description: 主な飛散地域
-        '400':
+                $ref: "#/components/schemas/PollenResponse"
+        "400":
           description: パラメータ不正
           content:
             application/json:
               schema:
-                allOf: &ref_4
-                  - type: object
-                    required: *ref_0
-                    properties: *ref_1
-                properties: &ref_5
-                  code:
-                    type: string
-                    enum:
-                      - BAD_REQUEST
+                $ref: "#/components/schemas/BadRequestError"
               example:
                 error: Invalid query parameter
                 code: BAD_REQUEST
-        '500':
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: *ref_2
-                properties: *ref_3
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -187,96 +113,27 @@ paths:
             format: date
           description: 取得終了日 (YYYY-MM-DD)。省略時は当日
       responses:
-        '200':
+        "200":
           description: 症状ログ一覧の取得成功
           content:
             application/json:
               schema:
-                type: object
-                required: &ref_16
-                  - items
-                  - total
-                properties: &ref_17
-                  items:
-                    type: array
-                    items:
-                      type: object
-                      required: &ref_6
-                        - id
-                        - date
-                        - sneezing
-                        - runny
-                        - itchy
-                        - pollen_level
-                        - took_medication
-                        - note
-                        - created_at
-                        - updated_at
-                      properties: &ref_7
-                        id:
-                          type: string
-                          format: uuid
-                          description: 症状ログ ID (UUID v7)
-                        date:
-                          type: string
-                          format: date
-                          description: 記録日 (YYYY-MM-DD)
-                        sneezing:
-                          type: integer
-                          format: int32
-                          minimum: 1
-                          maximum: 5
-                        runny:
-                          type: integer
-                          format: int32
-                          minimum: 1
-                          maximum: 5
-                        itchy:
-                          type: integer
-                          format: int32
-                          minimum: 1
-                          maximum: 5
-                        pollen_level:
-                          type: integer
-                          format: int32
-                          minimum: 1
-                          maximum: 5
-                        took_medication:
-                          type: boolean
-                          default: false
-                        note:
-                          type: string
-                          default: ''
-                          maxLength: 200
-                        created_at:
-                          type: string
-                          format: date-time
-                          description: 作成日時 (RFC3339)
-                        updated_at:
-                          type: string
-                          format: date-time
-                          description: 最終更新日時 (RFC3339)
-                  total:
-                    type: integer
-                    format: int32
-                    description: 総件数
-        '400':
+                $ref: "#/components/schemas/SymptomsListResponse"
+        "400":
           description: パラメータ不正
           content:
             application/json:
               schema:
-                allOf: *ref_4
-                properties: *ref_5
+                $ref: "#/components/schemas/BadRequestError"
               example:
                 error: Invalid query parameter
                 code: BAD_REQUEST
-        '500':
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: *ref_2
-                properties: *ref_3
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -292,96 +149,38 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: &ref_18
-                - date
-                - sneezing
-                - runny
-                - itchy
-                - pollen_level
-                - took_medication
-                - note
-              properties: &ref_19
-                date:
-                  type: string
-                  format: date
-                  description: 記録日 (YYYY-MM-DD)
-                sneezing:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: くしゃみの強度 1〜5
-                runny:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: 鼻水の強度 1〜5
-                itchy:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: 目のかゆみの強度 1〜5
-                pollen_level:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: 記録時の花粉レベル 1〜5
-                took_medication:
-                  type: boolean
-                  default: false
-                  description: その日薬を服用したか。省略時は false として送信
-                note:
-                  type: string
-                  default: ''
-                  maxLength: 200
-                  description: フリーメモ (最大 200 文字)。省略時は空文字として送信
+              $ref: "#/components/schemas/SymptomRequest"
       responses:
-        '201':
+        "201":
           description: 症状ログの保存成功
           content:
             application/json:
               schema:
-                type: object
-                required: *ref_6
-                properties: *ref_7
-        '400':
+                $ref: "#/components/schemas/SymptomResponse"
+        "400":
           description: パラメータ不正
           content:
             application/json:
               schema:
-                allOf: *ref_4
-                properties: *ref_5
+                $ref: "#/components/schemas/BadRequestError"
               example:
                 error: Invalid request body
                 code: BAD_REQUEST
-        '409':
+        "409":
           description: 同日付のレコードが既に存在する
           content:
             application/json:
               schema:
-                allOf: &ref_20
-                  - type: object
-                    required: *ref_0
-                    properties: *ref_1
-                properties: &ref_21
-                  code:
-                    type: string
-                    enum:
-                      - CONFLICT
+                $ref: "#/components/schemas/ConflictError"
               example:
                 error: Symptom log for this date already exists
                 code: CONFLICT
-        '500':
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: *ref_2
-                properties: *ref_3
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -401,38 +200,27 @@ paths:
             format: uuid
           description: 取得対象の症状ログ ID (UUID v7)
       responses:
-        '200':
+        "200":
           description: 症状ログの取得成功
           content:
             application/json:
               schema:
-                type: object
-                required: *ref_6
-                properties: *ref_7
-        '404':
+                $ref: "#/components/schemas/SymptomResponse"
+        "404":
           description: 指定 UUID の症状ログが存在しない
           content:
             application/json:
               schema:
-                allOf: &ref_8
-                  - type: object
-                    required: *ref_0
-                    properties: *ref_1
-                properties: &ref_9
-                  code:
-                    type: string
-                    enum:
-                      - NOT_FOUND
+                $ref: "#/components/schemas/NotFoundError"
               example:
                 error: Symptom log not found
                 code: NOT_FOUND
-        '500':
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: *ref_2
-                properties: *ref_3
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -456,84 +244,38 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: &ref_22
-                - sneezing
-                - runny
-                - itchy
-                - pollen_level
-                - took_medication
-                - note
-              properties: &ref_23
-                sneezing:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: くしゃみの強度 1〜5
-                runny:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: 鼻水の強度 1〜5
-                itchy:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: 目のかゆみの強度 1〜5
-                pollen_level:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 5
-                  description: 花粉レベル 1〜5
-                took_medication:
-                  type: boolean
-                  default: false
-                  description: その日薬を服用したか。省略時は false として送信
-                note:
-                  type: string
-                  default: ''
-                  maxLength: 200
-                  description: フリーメモ (最大 200 文字)。省略時は空文字として送信
+              $ref: "#/components/schemas/SymptomUpdateRequest"
       responses:
-        '200':
+        "200":
           description: 症状ログの更新成功
           content:
             application/json:
               schema:
-                type: object
-                required: *ref_6
-                properties: *ref_7
-        '400':
+                $ref: "#/components/schemas/SymptomResponse"
+        "400":
           description: パラメータ不正
           content:
             application/json:
               schema:
-                allOf: *ref_4
-                properties: *ref_5
+                $ref: "#/components/schemas/BadRequestError"
               example:
                 error: Invalid request body
                 code: BAD_REQUEST
-        '404':
+        "404":
           description: 指定 UUID の症状ログが存在しない
           content:
             application/json:
               schema:
-                allOf: *ref_8
-                properties: *ref_9
+                $ref: "#/components/schemas/NotFoundError"
               example:
                 error: Symptom log not found
                 code: NOT_FOUND
-        '500':
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: *ref_2
-                properties: *ref_3
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -553,25 +295,23 @@ paths:
             format: uuid
           description: 削除対象の症状ログ ID (UUID v7)
       responses:
-        '204':
+        "204":
           description: 症状ログの削除成功
-        '404':
+        "404":
           description: 指定 UUID の症状ログが存在しない
           content:
             application/json:
               schema:
-                allOf: *ref_8
-                properties: *ref_9
+                $ref: "#/components/schemas/NotFoundError"
               example:
                 error: Symptom log not found
                 code: NOT_FOUND
-        '500':
+        "500":
           description: サーバーエラー
           content:
             application/json:
               schema:
-                allOf: *ref_2
-                properties: *ref_3
+                $ref: "#/components/schemas/InternalServerError"
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
@@ -584,45 +324,262 @@ components:
   schemas:
     HealthResponse:
       type: object
-      required: *ref_10
-      properties: *ref_11
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+          description: サービスの稼働状態
     ErrorResponse:
       type: object
-      required: *ref_0
-      properties: *ref_1
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          description: エラー内容の説明文 (英語)
+        code:
+          type: string
+          description: エラーコード
     InternalServerError:
-      allOf: *ref_2
-      properties: *ref_3
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        code:
+          type: string
+          enum:
+            - INTERNAL_SERVER_ERROR
     SeasonInfo:
       type: object
-      required: *ref_12
-      properties: *ref_13
+      required:
+        - peak
+        - characteristics
+        - region
+      properties:
+        peak:
+          type: string
+          description: "ピークシーズン (例: 2月〜4月)"
+        characteristics:
+          type: string
+          description: 特徴・症状の傾向
+        region:
+          type: string
+          description: 主な飛散地域
     PollenResponse:
       type: object
-      required: *ref_14
-      properties: *ref_15
+      required:
+        - date
+        - level
+        - pollen_type
+        - season_info
+      properties:
+        date:
+          type: string
+          format: date
+          description: 取得日 (YYYY-MM-DD)
+        level:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: "花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)"
+        pollen_type:
+          type: string
+          enum:
+            - CEDAR
+            - CYPRESS
+            - RAGWEED
+            - GRASS
+            - MUGWORT
+          description: "現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)"
+        season_info:
+          $ref: "#/components/schemas/SeasonInfo"
     BadRequestError:
-      allOf: *ref_4
-      properties: *ref_5
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        code:
+          type: string
+          enum:
+            - BAD_REQUEST
     SymptomResponse:
       type: object
-      required: *ref_6
-      properties: *ref_7
+      required:
+        - id
+        - date
+        - sneezing
+        - runny
+        - itchy
+        - pollen_level
+        - took_medication
+        - note
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 症状ログ ID (UUID v7)
+        date:
+          type: string
+          format: date
+          description: 記録日 (YYYY-MM-DD)
+        sneezing:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+        runny:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+        itchy:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+        pollen_level:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+        took_medication:
+          type: boolean
+          default: false
+        note:
+          type: string
+          default: ""
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時 (RFC3339)
+        updated_at:
+          type: string
+          format: date-time
+          description: 最終更新日時 (RFC3339)
     SymptomsListResponse:
       type: object
-      required: *ref_16
-      properties: *ref_17
+      required:
+        - items
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SymptomResponse"
+        total:
+          type: integer
+          format: int32
+          description: 総件数
     SymptomRequest:
       type: object
-      required: *ref_18
-      properties: *ref_19
+      required:
+        - date
+        - sneezing
+        - runny
+        - itchy
+        - pollen_level
+        - took_medication
+        - note
+      properties:
+        date:
+          type: string
+          format: date
+          description: 記録日 (YYYY-MM-DD)
+        sneezing:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: くしゃみの強度 1〜5
+        runny:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: 鼻水の強度 1〜5
+        itchy:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: 目のかゆみの強度 1〜5
+        pollen_level:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: 記録時の花粉レベル 1〜5
+        took_medication:
+          type: boolean
+          default: false
+          description: その日薬を服用したか。省略時は false として送信
+        note:
+          type: string
+          default: ""
+          maxLength: 200
+          description: フリーメモ (最大 200 文字)。省略時は空文字として送信
     ConflictError:
-      allOf: *ref_20
-      properties: *ref_21
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        code:
+          type: string
+          enum:
+            - CONFLICT
     NotFoundError:
-      allOf: *ref_8
-      properties: *ref_9
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        code:
+          type: string
+          enum:
+            - NOT_FOUND
     SymptomUpdateRequest:
       type: object
-      required: *ref_22
-      properties: *ref_23
+      required:
+        - sneezing
+        - runny
+        - itchy
+        - pollen_level
+        - took_medication
+        - note
+      properties:
+        sneezing:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: くしゃみの強度 1〜5
+        runny:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: 鼻水の強度 1〜5
+        itchy:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: 目のかゆみの強度 1〜5
+        pollen_level:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: 花粉レベル 1〜5
+        took_medication:
+          type: boolean
+          default: false
+          description: その日薬を服用したか。省略時は false として送信
+        note:
+          type: string
+          default: ""
+          maxLength: 200
+          description: フリーメモ (最大 200 文字)。省略時は空文字として送信

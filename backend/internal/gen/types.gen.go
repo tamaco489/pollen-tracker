@@ -4,6 +4,8 @@
 package gen
 
 import (
+	"time"
+
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -11,13 +13,13 @@ const (
 	ApiKeyAuthScopes apiKeyAuthContextKey = "ApiKeyAuth.Scopes"
 )
 
-// Defines values for GetHealth200JSONResponseBodyStatus.
+// Defines values for HealthResponseStatus.
 const (
-	Ok GetHealth200JSONResponseBodyStatus = "ok"
+	Ok HealthResponseStatus = "ok"
 )
 
-// Valid indicates whether the value is a known member of the GetHealth200JSONResponseBodyStatus enum.
-func (e GetHealth200JSONResponseBodyStatus) Valid() bool {
+// Valid indicates whether the value is a known member of the HealthResponseStatus enum.
+func (e HealthResponseStatus) Valid() bool {
 	switch e {
 	case Ok:
 		return true
@@ -26,17 +28,17 @@ func (e GetHealth200JSONResponseBodyStatus) Valid() bool {
 	}
 }
 
-// Defines values for GetPollen200JSONResponseBodyPollenType.
+// Defines values for PollenResponsePollenType.
 const (
-	CEDAR   GetPollen200JSONResponseBodyPollenType = "CEDAR"
-	CYPRESS GetPollen200JSONResponseBodyPollenType = "CYPRESS"
-	GRASS   GetPollen200JSONResponseBodyPollenType = "GRASS"
-	MUGWORT GetPollen200JSONResponseBodyPollenType = "MUGWORT"
-	RAGWEED GetPollen200JSONResponseBodyPollenType = "RAGWEED"
+	CEDAR   PollenResponsePollenType = "CEDAR"
+	CYPRESS PollenResponsePollenType = "CYPRESS"
+	GRASS   PollenResponsePollenType = "GRASS"
+	MUGWORT PollenResponsePollenType = "MUGWORT"
+	RAGWEED PollenResponsePollenType = "RAGWEED"
 )
 
-// Valid indicates whether the value is a known member of the GetPollen200JSONResponseBodyPollenType enum.
-func (e GetPollen200JSONResponseBodyPollenType) Valid() bool {
+// Valid indicates whether the value is a known member of the PollenResponsePollenType enum.
+func (e PollenResponsePollenType) Valid() bool {
 	switch e {
 	case CEDAR:
 		return true
@@ -53,38 +55,66 @@ func (e GetPollen200JSONResponseBodyPollenType) Valid() bool {
 	}
 }
 
-// apiKeyAuthContextKey is the context key for ApiKeyAuth security scheme
-type apiKeyAuthContextKey string
+// BadRequestError defines model for BadRequestError.
+type BadRequestError = ErrorResponse
 
-// GetHealth200JSONResponseBodyStatus defines parameters for GetHealth.
-type GetHealth200JSONResponseBodyStatus string
+// ConflictError defines model for ConflictError.
+type ConflictError = ErrorResponse
 
-// GetPollenParams defines parameters for GetPollen.
-type GetPollenParams struct {
-	// Lat 緯度 (例: 35.7122)
-	Lat float64 `form:"lat" json:"lat"`
+// ErrorResponse defines model for ErrorResponse.
+type ErrorResponse struct {
+	// Code エラーコード
+	Code string `json:"code"`
 
-	// Lng 経度 (例: 139.7811)
-	Lng float64 `form:"lng" json:"lng"`
-
-	// Date 取得日 (YYYY-MM-DD)。省略時は当日
-	Date *openapi_types.Date `form:"date,omitempty" json:"date,omitempty"`
+	// Error エラー内容の説明文 (英語)
+	Error string `json:"error"`
 }
 
-// GetPollen200JSONResponseBodyPollenType defines parameters for GetPollen.
-type GetPollen200JSONResponseBodyPollenType string
-
-// GetSymptomsParams defines parameters for GetSymptoms.
-type GetSymptomsParams struct {
-	// From 取得開始日 (YYYY-MM-DD)。省略時は 30 日前
-	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
-
-	// To 取得終了日 (YYYY-MM-DD)。省略時は当日
-	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+// HealthResponse defines model for HealthResponse.
+type HealthResponse struct {
+	// Status サービスの稼働状態
+	Status HealthResponseStatus `json:"status"`
 }
 
-// PostSymptomsJSONBody defines parameters for PostSymptoms.
-type PostSymptomsJSONBody struct {
+// HealthResponseStatus サービスの稼働状態
+type HealthResponseStatus string
+
+// InternalServerError defines model for InternalServerError.
+type InternalServerError = ErrorResponse
+
+// NotFoundError defines model for NotFoundError.
+type NotFoundError = ErrorResponse
+
+// PollenResponse defines model for PollenResponse.
+type PollenResponse struct {
+	// Date 取得日 (YYYY-MM-DD)
+	Date openapi_types.Date `json:"date"`
+
+	// Level 花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)
+	Level int32 `json:"level"`
+
+	// PollenType 現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)
+	PollenType PollenResponsePollenType `json:"pollen_type"`
+	SeasonInfo SeasonInfo               `json:"season_info"`
+}
+
+// PollenResponsePollenType 現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)
+type PollenResponsePollenType string
+
+// SeasonInfo defines model for SeasonInfo.
+type SeasonInfo struct {
+	// Characteristics 特徴・症状の傾向
+	Characteristics string `json:"characteristics"`
+
+	// Peak ピークシーズン (例: 2月〜4月)
+	Peak string `json:"peak"`
+
+	// Region 主な飛散地域
+	Region string `json:"region"`
+}
+
+// SymptomRequest defines model for SymptomRequest.
+type SymptomRequest struct {
 	// Date 記録日 (YYYY-MM-DD)
 	Date openapi_types.Date `json:"date"`
 
@@ -107,8 +137,29 @@ type PostSymptomsJSONBody struct {
 	TookMedication bool `json:"took_medication"`
 }
 
-// PutSymptomsIdJSONBody defines parameters for PutSymptomsId.
-type PutSymptomsIdJSONBody struct {
+// SymptomResponse defines model for SymptomResponse.
+type SymptomResponse struct {
+	// CreatedAt 作成日時 (RFC3339)
+	CreatedAt time.Time `json:"created_at"`
+
+	// Date 記録日 (YYYY-MM-DD)
+	Date openapi_types.Date `json:"date"`
+
+	// Id 症状ログ ID (UUID v7)
+	Id             openapi_types.UUID `json:"id"`
+	Itchy          int32              `json:"itchy"`
+	Note           string             `json:"note"`
+	PollenLevel    int32              `json:"pollen_level"`
+	Runny          int32              `json:"runny"`
+	Sneezing       int32              `json:"sneezing"`
+	TookMedication bool               `json:"took_medication"`
+
+	// UpdatedAt 最終更新日時 (RFC3339)
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// SymptomUpdateRequest defines model for SymptomUpdateRequest.
+type SymptomUpdateRequest struct {
 	// Itchy 目のかゆみの強度 1〜5
 	Itchy int32 `json:"itchy"`
 
@@ -128,8 +179,40 @@ type PutSymptomsIdJSONBody struct {
 	TookMedication bool `json:"took_medication"`
 }
 
+// SymptomsListResponse defines model for SymptomsListResponse.
+type SymptomsListResponse struct {
+	Items []SymptomResponse `json:"items"`
+
+	// Total 総件数
+	Total int32 `json:"total"`
+}
+
+// apiKeyAuthContextKey is the context key for ApiKeyAuth security scheme
+type apiKeyAuthContextKey string
+
+// GetPollenParams defines parameters for GetPollen.
+type GetPollenParams struct {
+	// Lat 緯度 (例: 35.7122)
+	Lat float64 `form:"lat" json:"lat"`
+
+	// Lng 経度 (例: 139.7811)
+	Lng float64 `form:"lng" json:"lng"`
+
+	// Date 取得日 (YYYY-MM-DD)。省略時は当日
+	Date *openapi_types.Date `form:"date,omitempty" json:"date,omitempty"`
+}
+
+// GetSymptomsParams defines parameters for GetSymptoms.
+type GetSymptomsParams struct {
+	// From 取得開始日 (YYYY-MM-DD)。省略時は 30 日前
+	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+
+	// To 取得終了日 (YYYY-MM-DD)。省略時は当日
+	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+}
+
 // PostSymptomsJSONRequestBody defines body for PostSymptoms for application/json ContentType.
-type PostSymptomsJSONRequestBody PostSymptomsJSONBody
+type PostSymptomsJSONRequestBody = SymptomRequest
 
 // PutSymptomsIdJSONRequestBody defines body for PutSymptomsId for application/json ContentType.
-type PutSymptomsIdJSONRequestBody PutSymptomsIdJSONBody
+type PutSymptomsIdJSONRequestBody = SymptomUpdateRequest

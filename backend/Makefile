@@ -11,7 +11,7 @@ OPENAPI_ROOT   := oas/oapi-base.yaml
 OPENAPI_BUNDLE := oas/oapi.yaml
 
 bundle-api: ## OpenAPI ドキュメントをバンドルする
-	npx --yes @redocly/cli bundle $(OPENAPI_ROOT) -o $(OPENAPI_BUNDLE) --dereferenced
+	npx --yes @redocly/cli bundle $(OPENAPI_ROOT) -o $(OPENAPI_BUNDLE)
 
 gen-api: bundle-api ## OpenAPI ドキュメントからコードを生成する
 	go tool oapi-codegen --config=oas/config/types.yaml $(OPENAPI_BUNDLE)
