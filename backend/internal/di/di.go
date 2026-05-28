@@ -11,6 +11,7 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/pkg/infrastructure/datastore"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/logger"
 
+	infra_datastore "github.com/tamaco489/pollen-tracker/backend/internal/infrastructure/datastore"
 	google_pollen "github.com/tamaco489/pollen-tracker/backend/pkg/library/google/pollen"
 )
 
@@ -31,7 +32,10 @@ func NewServerContainer(ctx context.Context) (*server.Server, error) {
 	pollenClient := google_pollen.NewPollenClient(cfg.Google.PollenAPIKey)
 	pollenUseCase := usecase.NewGetForecast(pollenClient)
 
-	h := handler.New(pollenUseCase)
+	symptomsRepo := infra_datastore.NewSymptomsRepository(conn)
+	postSymptomsUseCase := usecase.NewPostSymptoms(symptomsRepo)
+
+	h := handler.NewHandler(pollenUseCase, postSymptomsUseCase)
 
 	srv, err := server.NewServer(ctx, l, cfg, conn, h)
 	if err != nil {
