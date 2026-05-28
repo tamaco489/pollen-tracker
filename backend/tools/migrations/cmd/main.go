@@ -47,6 +47,15 @@ func main() {
 	}
 
 	ctx := context.Background()
+
+	if *command == "down" {
+		version, err := goose.GetDBVersion(db)
+		if err != nil || version == 0 {
+			log.Printf("goose down: no migrations applied, skipping")
+			return
+		}
+	}
+
 	if err := goose.RunContext(ctx, *command, db, dir); err != nil {
 		log.Fatalf("goose %s: %v", *command, err)
 	}
