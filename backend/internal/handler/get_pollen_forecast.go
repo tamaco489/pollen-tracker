@@ -19,7 +19,7 @@ func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject)
 		input.Date = &t
 	}
 
-	forecast, err := h.pollenUseCase.GetForecast(ctx, input)
+	forecast, err := h.getPollenUseCase.GetForecast(ctx, input)
 	if err != nil {
 		return nil, err
 	}
@@ -27,12 +27,8 @@ func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject)
 	return gen.GetPollen200JSONResponse{
 		Date:       openapi_types.Date{Time: forecast.Date},
 		Level:      int32(forecast.Level),
-		PollenType: gen.GetPollen200JSONResponseBodyPollenType(forecast.PollenType),
-		SeasonInfo: struct {
-			Characteristics string `json:"characteristics"`
-			Peak            string `json:"peak"`
-			Region          string `json:"region"`
-		}{
+		PollenType: gen.PollenResponsePollenType(forecast.PollenType),
+		SeasonInfo: gen.SeasonInfo{
 			Characteristics: forecast.SeasonInfo.Characteristics,
 			Peak:            forecast.SeasonInfo.Peak,
 			Region:          forecast.SeasonInfo.Region,

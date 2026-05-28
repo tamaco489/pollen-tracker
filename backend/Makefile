@@ -2,6 +2,7 @@
 setup-tools: ## 開発環境をセットアップする
 	go install github.com/pressly/goose/v3/cmd/goose@latest
 	go install github.com/tursodatabase/turso-cli/cmd/turso@latest
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 	npm install -g @redocly/cli
 
 
@@ -11,7 +12,7 @@ OPENAPI_ROOT   := oas/oapi-base.yaml
 OPENAPI_BUNDLE := oas/oapi.yaml
 
 bundle-api: ## OpenAPI ドキュメントをバンドルする
-	npx --yes @redocly/cli bundle $(OPENAPI_ROOT) -o $(OPENAPI_BUNDLE) --dereferenced
+	npx --yes @redocly/cli bundle $(OPENAPI_ROOT) -o $(OPENAPI_BUNDLE)
 
 gen-api: bundle-api ## OpenAPI ドキュメントからコードを生成する
 	go tool oapi-codegen --config=oas/config/types.yaml $(OPENAPI_BUNDLE)
@@ -22,6 +23,19 @@ gen-api: bundle-api ## OpenAPI ドキュメントからコードを生成する
 
 preview-api: ## Redoc で OpenAPI ドキュメントをブラウザプレビューする
 	npx --yes @redocly/cli build-docs $(OPENAPI_ROOT) -o /tmp/pollen-tracker-api.html && open /tmp/pollen-tracker-api.html
+
+
+.PHONY: gen-sqlc sqlc-diff sqlc-vet sqlc-lint
+gen-sqlc: ## sqlc からコードを生成する
+	sqlc generate -f tools/sqlc/sqlc.yaml
+
+sqlc-diff: ## sqlc スキーマの差分を確認する
+	sqlc diff -f tools/sqlc/sqlc.yaml
+
+sqlc-vet: ## sqlc 静的解析を実行する
+	sqlc vet -f tools/sqlc/sqlc.yaml
+
+sqlc-lint: sqlc-diff sqlc-vet ## sqlc スキーマ差分確認と静的解析を実行する
 
 
 .PHONY: fmt lint mod build test verify

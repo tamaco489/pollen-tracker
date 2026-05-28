@@ -33,6 +33,13 @@ func newErrorHandler(l *logger.Logger) echo.HTTPErrorHandler {
 				Error: httperror.MsgNotFound.String(),
 			})
 
+		// 409 Conflict: すでに存在する場合のエラー
+		case errors.Is(err, sentinel.ErrAlreadyExists):
+			_ = c.JSON(http.StatusConflict, errorResponse{
+				Code:  httperror.CodeAlreadyExists.String(),
+				Error: httperror.MsgAlreadyExists.String(),
+			})
+
 		// 500 Internal Server Error: その他のエラー
 		default:
 			l.ErrorContext(c.Request().Context(), "internal server error", "error", err)

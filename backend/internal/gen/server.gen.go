@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/oapi-codegen/runtime"
@@ -245,10 +244,7 @@ type GetHealthResponseObject interface {
 	VisitGetHealthResponse(w http.ResponseWriter) error
 }
 
-type GetHealth200JSONResponse struct {
-	// Status サービスの稼働状態
-	Status GetHealth200JSONResponseBodyStatus `json:"status"`
-}
+type GetHealth200JSONResponse HealthResponse
 
 func (response GetHealth200JSONResponse) VisitGetHealthResponse(w http.ResponseWriter) error {
 
@@ -262,13 +258,7 @@ func (response GetHealth200JSONResponse) VisitGetHealthResponse(w http.ResponseW
 	return err
 }
 
-type GetHealth500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetHealth500JSONResponse InternalServerError
 
 func (response GetHealth500JSONResponse) VisitGetHealthResponse(w http.ResponseWriter) error {
 
@@ -290,26 +280,7 @@ type GetPollenResponseObject interface {
 	VisitGetPollenResponse(w http.ResponseWriter) error
 }
 
-type GetPollen200JSONResponse struct {
-	// Date 取得日 (YYYY-MM-DD)
-	Date openapi_types.Date `json:"date"`
-
-	// Level 花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)
-	Level int32 `json:"level"`
-
-	// PollenType 現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)
-	PollenType GetPollen200JSONResponseBodyPollenType `json:"pollen_type"`
-	SeasonInfo struct {
-		// Characteristics 特徴・症状の傾向
-		Characteristics string `json:"characteristics"`
-
-		// Peak ピークシーズン (例: 2月〜4月)
-		Peak string `json:"peak"`
-
-		// Region 主な飛散地域
-		Region string `json:"region"`
-	} `json:"season_info"`
-}
+type GetPollen200JSONResponse PollenResponse
 
 func (response GetPollen200JSONResponse) VisitGetPollenResponse(w http.ResponseWriter) error {
 
@@ -323,13 +294,7 @@ func (response GetPollen200JSONResponse) VisitGetPollenResponse(w http.ResponseW
 	return err
 }
 
-type GetPollen400JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetPollen400JSONResponse BadRequestError
 
 func (response GetPollen400JSONResponse) VisitGetPollenResponse(w http.ResponseWriter) error {
 
@@ -343,13 +308,7 @@ func (response GetPollen400JSONResponse) VisitGetPollenResponse(w http.ResponseW
 	return err
 }
 
-type GetPollen500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetPollen500JSONResponse InternalServerError
 
 func (response GetPollen500JSONResponse) VisitGetPollenResponse(w http.ResponseWriter) error {
 
@@ -371,30 +330,7 @@ type GetSymptomsResponseObject interface {
 	VisitGetSymptomsResponse(w http.ResponseWriter) error
 }
 
-type GetSymptoms200JSONResponse struct {
-	Items []struct {
-		// CreatedAt 作成日時 (RFC3339)
-		CreatedAt time.Time `json:"created_at"`
-
-		// Date 記録日 (YYYY-MM-DD)
-		Date openapi_types.Date `json:"date"`
-
-		// Id 症状ログ ID (UUID v7)
-		Id             openapi_types.UUID `json:"id"`
-		Itchy          int32              `json:"itchy"`
-		Note           string             `json:"note"`
-		PollenLevel    int32              `json:"pollen_level"`
-		Runny          int32              `json:"runny"`
-		Sneezing       int32              `json:"sneezing"`
-		TookMedication bool               `json:"took_medication"`
-
-		// UpdatedAt 最終更新日時 (RFC3339)
-		UpdatedAt time.Time `json:"updated_at"`
-	} `json:"items"`
-
-	// Total 総件数
-	Total int32 `json:"total"`
-}
+type GetSymptoms200JSONResponse SymptomsListResponse
 
 func (response GetSymptoms200JSONResponse) VisitGetSymptomsResponse(w http.ResponseWriter) error {
 
@@ -408,13 +344,7 @@ func (response GetSymptoms200JSONResponse) VisitGetSymptomsResponse(w http.Respo
 	return err
 }
 
-type GetSymptoms400JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetSymptoms400JSONResponse BadRequestError
 
 func (response GetSymptoms400JSONResponse) VisitGetSymptomsResponse(w http.ResponseWriter) error {
 
@@ -428,13 +358,7 @@ func (response GetSymptoms400JSONResponse) VisitGetSymptomsResponse(w http.Respo
 	return err
 }
 
-type GetSymptoms500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetSymptoms500JSONResponse InternalServerError
 
 func (response GetSymptoms500JSONResponse) VisitGetSymptomsResponse(w http.ResponseWriter) error {
 
@@ -456,25 +380,7 @@ type PostSymptomsResponseObject interface {
 	VisitPostSymptomsResponse(w http.ResponseWriter) error
 }
 
-type PostSymptoms201JSONResponse struct {
-	// CreatedAt 作成日時 (RFC3339)
-	CreatedAt time.Time `json:"created_at"`
-
-	// Date 記録日 (YYYY-MM-DD)
-	Date openapi_types.Date `json:"date"`
-
-	// Id 症状ログ ID (UUID v7)
-	Id             openapi_types.UUID `json:"id"`
-	Itchy          int32              `json:"itchy"`
-	Note           string             `json:"note"`
-	PollenLevel    int32              `json:"pollen_level"`
-	Runny          int32              `json:"runny"`
-	Sneezing       int32              `json:"sneezing"`
-	TookMedication bool               `json:"took_medication"`
-
-	// UpdatedAt 最終更新日時 (RFC3339)
-	UpdatedAt time.Time `json:"updated_at"`
-}
+type PostSymptoms201JSONResponse SymptomResponse
 
 func (response PostSymptoms201JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
 
@@ -488,13 +394,7 @@ func (response PostSymptoms201JSONResponse) VisitPostSymptomsResponse(w http.Res
 	return err
 }
 
-type PostSymptoms400JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type PostSymptoms400JSONResponse BadRequestError
 
 func (response PostSymptoms400JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
 
@@ -508,13 +408,7 @@ func (response PostSymptoms400JSONResponse) VisitPostSymptomsResponse(w http.Res
 	return err
 }
 
-type PostSymptoms409JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type PostSymptoms409JSONResponse ConflictError
 
 func (response PostSymptoms409JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
 
@@ -528,13 +422,7 @@ func (response PostSymptoms409JSONResponse) VisitPostSymptomsResponse(w http.Res
 	return err
 }
 
-type PostSymptoms500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type PostSymptoms500JSONResponse InternalServerError
 
 func (response PostSymptoms500JSONResponse) VisitPostSymptomsResponse(w http.ResponseWriter) error {
 
@@ -564,13 +452,7 @@ func (response DeleteSymptomsId204Response) VisitDeleteSymptomsIdResponse(w http
 	return nil
 }
 
-type DeleteSymptomsId404JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type DeleteSymptomsId404JSONResponse NotFoundError
 
 func (response DeleteSymptomsId404JSONResponse) VisitDeleteSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -584,13 +466,7 @@ func (response DeleteSymptomsId404JSONResponse) VisitDeleteSymptomsIdResponse(w 
 	return err
 }
 
-type DeleteSymptomsId500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type DeleteSymptomsId500JSONResponse InternalServerError
 
 func (response DeleteSymptomsId500JSONResponse) VisitDeleteSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -612,25 +488,7 @@ type GetSymptomsIdResponseObject interface {
 	VisitGetSymptomsIdResponse(w http.ResponseWriter) error
 }
 
-type GetSymptomsId200JSONResponse struct {
-	// CreatedAt 作成日時 (RFC3339)
-	CreatedAt time.Time `json:"created_at"`
-
-	// Date 記録日 (YYYY-MM-DD)
-	Date openapi_types.Date `json:"date"`
-
-	// Id 症状ログ ID (UUID v7)
-	Id             openapi_types.UUID `json:"id"`
-	Itchy          int32              `json:"itchy"`
-	Note           string             `json:"note"`
-	PollenLevel    int32              `json:"pollen_level"`
-	Runny          int32              `json:"runny"`
-	Sneezing       int32              `json:"sneezing"`
-	TookMedication bool               `json:"took_medication"`
-
-	// UpdatedAt 最終更新日時 (RFC3339)
-	UpdatedAt time.Time `json:"updated_at"`
-}
+type GetSymptomsId200JSONResponse SymptomResponse
 
 func (response GetSymptomsId200JSONResponse) VisitGetSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -644,13 +502,7 @@ func (response GetSymptomsId200JSONResponse) VisitGetSymptomsIdResponse(w http.R
 	return err
 }
 
-type GetSymptomsId404JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetSymptomsId404JSONResponse NotFoundError
 
 func (response GetSymptomsId404JSONResponse) VisitGetSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -664,13 +516,7 @@ func (response GetSymptomsId404JSONResponse) VisitGetSymptomsIdResponse(w http.R
 	return err
 }
 
-type GetSymptomsId500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type GetSymptomsId500JSONResponse InternalServerError
 
 func (response GetSymptomsId500JSONResponse) VisitGetSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -693,25 +539,7 @@ type PutSymptomsIdResponseObject interface {
 	VisitPutSymptomsIdResponse(w http.ResponseWriter) error
 }
 
-type PutSymptomsId200JSONResponse struct {
-	// CreatedAt 作成日時 (RFC3339)
-	CreatedAt time.Time `json:"created_at"`
-
-	// Date 記録日 (YYYY-MM-DD)
-	Date openapi_types.Date `json:"date"`
-
-	// Id 症状ログ ID (UUID v7)
-	Id             openapi_types.UUID `json:"id"`
-	Itchy          int32              `json:"itchy"`
-	Note           string             `json:"note"`
-	PollenLevel    int32              `json:"pollen_level"`
-	Runny          int32              `json:"runny"`
-	Sneezing       int32              `json:"sneezing"`
-	TookMedication bool               `json:"took_medication"`
-
-	// UpdatedAt 最終更新日時 (RFC3339)
-	UpdatedAt time.Time `json:"updated_at"`
-}
+type PutSymptomsId200JSONResponse SymptomResponse
 
 func (response PutSymptomsId200JSONResponse) VisitPutSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -725,13 +553,7 @@ func (response PutSymptomsId200JSONResponse) VisitPutSymptomsIdResponse(w http.R
 	return err
 }
 
-type PutSymptomsId400JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type PutSymptomsId400JSONResponse BadRequestError
 
 func (response PutSymptomsId400JSONResponse) VisitPutSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -745,13 +567,7 @@ func (response PutSymptomsId400JSONResponse) VisitPutSymptomsIdResponse(w http.R
 	return err
 }
 
-type PutSymptomsId404JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type PutSymptomsId404JSONResponse NotFoundError
 
 func (response PutSymptomsId404JSONResponse) VisitPutSymptomsIdResponse(w http.ResponseWriter) error {
 
@@ -765,13 +581,7 @@ func (response PutSymptomsId404JSONResponse) VisitPutSymptomsIdResponse(w http.R
 	return err
 }
 
-type PutSymptomsId500JSONResponse struct {
-	// Code エラーコード
-	Code string `json:"code"`
-
-	// Error エラー内容の説明文 (英語)
-	Error string `json:"error"`
-}
+type PutSymptomsId500JSONResponse InternalServerError
 
 func (response PutSymptomsId500JSONResponse) VisitPutSymptomsIdResponse(w http.ResponseWriter) error {
 

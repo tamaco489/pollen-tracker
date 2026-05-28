@@ -2,44 +2,39 @@ package handler
 
 import (
 	"context"
-	"math/rand"
-	"time"
 
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
-	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
+	"github.com/tamaco489/pollen-tracker/backend/internal/usecase"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-func (h *Handler) PostSymptoms(_ context.Context, _ gen.PostSymptomsRequestObject) (gen.PostSymptomsResponseObject, error) {
-	switch rand.Intn(4) {
-	case 0:
-		return gen.PostSymptoms201JSONResponse{
-			CreatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
-			Date:           openapi_types.Date{Time: time.Date(2026, 5, 25, 0, 0, 0, 0, time.UTC)},
-			Id:             openapi_types.UUID{},
-			Itchy:          2,
-			Note:           "stub response",
-			PollenLevel:    3,
-			Runny:          3,
-			Sneezing:       2,
-			TookMedication: true,
-			UpdatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
-		}, nil
-	case 1:
-		return gen.PostSymptoms400JSONResponse{
-			Code:  httperror.CodeBadRequest.String(),
-			Error: httperror.MsgBadRequest.String(),
-		}, nil
-	case 2:
-		return gen.PostSymptoms409JSONResponse{
-			Code:  httperror.CodeAlreadyExists.String(),
-			Error: httperror.MsgAlreadyExists.String(),
-		}, nil
-	default:
-		return gen.PostSymptoms500JSONResponse{
-			Code:  httperror.CodeInternalError.String(),
-			Error: httperror.MsgInternalError.String(),
-		}, nil
+func (h *Handler) PostSymptoms(ctx context.Context, req gen.PostSymptomsRequestObject) (gen.PostSymptomsResponseObject, error) {
+	input := usecase.PostSymptomsInput{
+		Date:           req.Body.Date.Time,
+		Sneezing:       req.Body.Sneezing,
+		Runny:          req.Body.Runny,
+		Itchy:          req.Body.Itchy,
+		PollenLevel:    req.Body.PollenLevel,
+		TookMedication: req.Body.TookMedication,
+		Note:           req.Body.Note,
 	}
+
+	symptom, err := h.postSymptomsUseCase.PostSymptoms(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return gen.PostSymptoms201JSONResponse{
+		Id:             openapi_types.UUID(symptom.ID),
+		Date:           openapi_types.Date{Time: symptom.Date},
+		Sneezing:       symptom.Sneezing,
+		Runny:          symptom.Runny,
+		Itchy:          symptom.Itchy,
+		PollenLevel:    symptom.PollenLevel,
+		TookMedication: symptom.TookMedication,
+		Note:           symptom.Note,
+		CreatedAt:      symptom.CreatedAt,
+		UpdatedAt:      symptom.UpdatedAt,
+	}, nil
 }

@@ -1,14 +1,13 @@
-package usecase
+package symptoms
 
-import "time"
+import (
+	"time"
 
-type GetForecastInput struct {
-	Lat  float64
-	Lng  float64
-	Date *time.Time
-}
+	"github.com/google/uuid"
+)
 
-type PostSymptomsInput struct {
+type Symptom struct {
+	ID             uuid.UUID
 	Date           time.Time
 	Sneezing       int32
 	Runny          int32
@@ -16,4 +15,6 @@ type PostSymptomsInput struct {
 	PollenLevel    int32
 	TookMedication bool
 	Note           string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }

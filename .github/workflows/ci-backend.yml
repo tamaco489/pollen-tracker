@@ -59,6 +59,27 @@ jobs:
       - name: Build
         run: make build
 
+  sqlc-lint:
+    name: sqlc Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "backend/go.mod"
+          cache-dependency-path: "backend/go.sum"
+
+      - name: Install sqlc
+        run: go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+
+      - name: sqlc Lint
+        run: make sqlc-lint
+
   test:
     name: Test
     runs-on: ubuntu-latest
