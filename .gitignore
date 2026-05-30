@@ -1,1 +1,4 @@
 tmp
+
+# Claude Code local settings (personal environment only)
+.claude/settings.local.json
