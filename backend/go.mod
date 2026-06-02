@@ -10,7 +10,7 @@ require (
 	github.com/labstack/echo/v5 v5.1.1
 	github.com/oapi-codegen/runtime v1.4.1
 	github.com/pressly/goose/v3 v3.27.1
-	github.com/tursodatabase/libsql-client-go v0.0.0-20260514053736-a9a8fadfe885
+	github.com/tursodatabase/libsql-client-go v0.0.0-20260528064733-9d5d30a29a60
 )
 
 require (
