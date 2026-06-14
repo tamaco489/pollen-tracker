@@ -14,6 +14,14 @@ func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject)
 		return nil, err
 	}
 
+	forecastItems := make([]gen.PollenForecastItem, 0, len(forecast.Forecast))
+	for _, f := range forecast.Forecast {
+		forecastItems = append(forecastItems, gen.PollenForecastItem{
+			Date:  types.Date{Time: f.Date},
+			Level: int32(f.Level),
+		})
+	}
+
 	return gen.GetPollen200JSONResponse{
 		Date:       types.Date{Time: forecast.Date},
 		Level:      int32(forecast.Level),
@@ -23,5 +31,6 @@ func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject)
 			Peak:            forecast.SeasonInfo.Peak,
 			Region:          forecast.SeasonInfo.Region,
 		},
+		Forecast: forecastItems,
 	}, nil
 }

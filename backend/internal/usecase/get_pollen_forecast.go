@@ -55,11 +55,11 @@ func (uc *getForecastUseCase) GetForecast(ctx context.Context, input gen.GetPoll
 		)
 	}
 
-	// Days は「今日から何日分取得するか」を指定する: 対象日付の index に到達するために +1 する
+	// 常に最大日数 (maxDayOffset + 1 = 5) で取得して翌日以降の予報も得る
 	request := &pollen.ForecastRequest{
 		Lat:  input.Lat,
 		Lng:  input.Lng,
-		Days: dayOffset + 1,
+		Days: maxDayOffset + 1,
 	}
 
 	// Google Pollen API から予報を取得
@@ -75,11 +75,22 @@ func (uc *getForecastUseCase) GetForecast(ctx context.Context, input gen.GetPoll
 
 	pollenType, level := uc.dominantPollen(resp.DailyForecasts[dayOffset].Plants)
 
+	// 指定日の翌日以降で API レスポンスに含まれる分を forecast として積む
+	forecast := make([]domain.ForecastItem, 0, maxDayOffset-dayOffset)
+	for i := dayOffset + 1; i < len(resp.DailyForecasts); i++ {
+		_, forecastLevel := uc.dominantPollen(resp.DailyForecasts[i].Plants)
+		forecast = append(forecast, domain.ForecastItem{
+			Date:  today.Add(time.Duration(i) * 24 * time.Hour),
+			Level: forecastLevel,
+		})
+	}
+
 	return &domain.PollenForecast{
 		Date:       targetDate,
 		Level:      level,
 		PollenType: pollenType,
 		SeasonInfo: domain.SeasonCalendar[pollenType],
+		Forecast:   forecast,
 	}, nil
 }
 
