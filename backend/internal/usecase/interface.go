@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/tamaco489/pollen-tracker/backend/internal/domain"
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 )
@@ -20,4 +21,9 @@ type CreateSymptomsUseCase interface {
 type GetSymptomsUseCase interface {
 	// GetSymptoms はユーザーの花粉症状を日付範囲で取得する
 	GetSymptoms(ctx context.Context, input gen.GetSymptomsParams) ([]gen.SymptomResponse, error)
+}
+
+type PutSymptomsUseCase interface {
+	// PutSymptoms は UUID で症状ログを上書き更新する
+	PutSymptoms(ctx context.Context, id uuid.UUID, input gen.SymptomUpdateRequest) (*gen.SymptomResponse, error)
 }

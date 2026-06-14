@@ -16,3 +16,10 @@ type CreateSymptomsRepository interface {
 	// InsertSymptom はユーザーの花粉症状を記録する
 	InsertSymptom(ctx context.Context, s *dto.CreateSymptoms) error
 }
+
+type PutSymptomsRepository interface {
+	// UpdateSymptom は UUID でレコードを特定して症状を上書き更新する
+	//
+	// 対象が存在しない場合は sentinel.ErrNotFound を返す
+	UpdateSymptom(ctx context.Context, s *dto.UpdateSymptoms) (*dto.GetSymptoms, error)
+}
