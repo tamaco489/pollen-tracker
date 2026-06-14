@@ -13,12 +13,19 @@ const (
 	PollenTypeMugwort PollenType = "MUGWORT"
 )
 
+// ForecastItem は 1 日分の花粉予報
+type ForecastItem struct {
+	Date  time.Time
+	Level int
+}
+
 // PollenForecast は花粉予報のエンティティ
 type PollenForecast struct {
 	Date       time.Time
 	Level      int
 	PollenType PollenType
 	SeasonInfo SeasonInfo
+	Forecast   []ForecastItem
 }
 
 // SeasonInfo は花粉種別のシーズン情報

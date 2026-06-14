@@ -15,6 +15,23 @@ SeasonInfo:
       type: string
       description: 主な飛散地域
 
+PollenForecastItem:
+  type: object
+  required:
+    - date
+    - level
+  properties:
+    date:
+      type: string
+      format: date
+      description: 予報日 (YYYY-MM-DD)
+    level:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: "花粉レベル (1: 少ない / 5: 極めて多い)"
+
 PollenResponse:
   type: object
   required:
@@ -22,6 +39,7 @@ PollenResponse:
     - level
     - pollen_type
     - season_info
+    - forecast
   properties:
     date:
       type: string
@@ -44,3 +62,8 @@ PollenResponse:
       description: "現在シーズンのメイン花粉種 (CEDAR: スギ / CYPRESS: ヒノキ / RAGWEED: ブタクサ / GRASS: イネ科 / MUGWORT: ヨモギ)"
     season_info:
       $ref: "#/SeasonInfo"
+    forecast:
+      type: array
+      description: "翌日以降の花粉予報 (最大 4 日分)"
+      items:
+        $ref: "#/PollenForecastItem"

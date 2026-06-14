@@ -9,6 +9,7 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/internal/infrastructure/datastore/gen"
 )
 
+// GetWeeklyStats は週次集計データを取得する
 func (r *symptomsRepository) GetWeeklyStats(ctx context.Context, from, to time.Time) ([]dto.StatsItem, error) {
 	rows, err := r.queries.GetWeeklyStats(ctx, r.db, gen.GetWeeklyStatsParams{
 		From: from.Format(time.DateOnly),
@@ -29,6 +30,7 @@ func (r *symptomsRepository) GetWeeklyStats(ctx context.Context, from, to time.T
 	return result, nil
 }
 
+// GetMonthlyStats は月次集計データを取得する
 func (r *symptomsRepository) GetMonthlyStats(ctx context.Context, from, to time.Time) ([]dto.StatsItem, error) {
 	rows, err := r.queries.GetMonthlyStats(ctx, r.db, gen.GetMonthlyStatsParams{
 		From: from.Format(time.DateOnly),
