@@ -34,8 +34,9 @@ func NewServerContainer(ctx context.Context) (*server.Server, error) {
 	symptomsRepo := infra_datastore.NewSymptomsRepository(conn)
 	getSymptomsUseCase := usecase.NewGetSymptoms(symptomsRepo)
 	createSymptomsUseCase := usecase.NewCreateSymptoms(symptomsRepo)
+	putSymptomsUseCase := usecase.NewPutSymptoms(symptomsRepo)
 
-	h := handler.NewHandler(pollenUseCase, getSymptomsUseCase, createSymptomsUseCase)
+	h := handler.NewHandler(pollenUseCase, getSymptomsUseCase, createSymptomsUseCase, putSymptomsUseCase)
 
 	srv, err := server.NewServer(ctx, l, cfg, conn, h)
 	if err != nil {

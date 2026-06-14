@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
-	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
-
 	"github.com/oapi-codegen/runtime/types"
+
+	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 )
 
 func (h *Handler) GetPollen(ctx context.Context, req gen.GetPollenRequestObject) (gen.GetPollenResponseObject, error) {
