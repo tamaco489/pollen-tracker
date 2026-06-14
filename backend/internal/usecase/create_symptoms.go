@@ -6,8 +6,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/oapi-codegen/runtime/types"
 
 	"github.com/tamaco489/pollen-tracker/backend/internal/dto"
+	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 	"github.com/tamaco489/pollen-tracker/backend/internal/infrastructure/datastore"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 )
@@ -26,7 +28,8 @@ const (
 	noteMaxChars    = 200
 )
 
-func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input CreateSymptomsInput) (*CreateSymptomsOutput, error) {
+// CreateSymptoms はユーザーの花粉症状を記録する
+func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input gen.SymptomRequest) (*gen.SymptomResponse, error) {
 	if err := uc.validate(input); err != nil {
 		return nil, err
 	}
@@ -39,7 +42,7 @@ func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input Creat
 	now := time.Now().UTC()
 	s := &dto.CreateSymptoms{
 		ID:             id,
-		Date:           input.Date.UTC().Truncate(24 * time.Hour),
+		Date:           input.Date.Time.UTC().Truncate(24 * time.Hour),
 		Sneezing:       input.Sneezing,
 		Runny:          input.Runny,
 		Itchy:          input.Itchy,
@@ -54,9 +57,9 @@ func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input Creat
 		return nil, err
 	}
 
-	return &CreateSymptomsOutput{
-		ID:             s.ID,
-		Date:           s.Date,
+	return &gen.SymptomResponse{
+		Id:             types.UUID(s.ID),
+		Date:           types.Date{Time: s.Date},
 		Sneezing:       s.Sneezing,
 		Runny:          s.Runny,
 		Itchy:          s.Itchy,
@@ -68,7 +71,7 @@ func (uc *createSymptomsUseCase) CreateSymptoms(ctx context.Context, input Creat
 	}, nil
 }
 
-func (uc *createSymptomsUseCase) validate(input CreateSymptomsInput) error {
+func (uc *createSymptomsUseCase) validate(input gen.SymptomRequest) error {
 	for _, v := range []struct {
 		val  int32
 		name string

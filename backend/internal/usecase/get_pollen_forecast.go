@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
-
 	"github.com/tamaco489/pollen-tracker/backend/internal/domain"
+	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
+	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/sentinel"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/library/google/pollen"
 )
 
@@ -32,7 +32,7 @@ const (
 )
 
 // GetForecast は指定座標・日付の花粉予報を取得してドメインエンティティで返す
-func (uc *getForecastUseCase) GetForecast(ctx context.Context, input GetForecastInput) (*domain.PollenForecast, error) {
+func (uc *getForecastUseCase) GetForecast(ctx context.Context, input gen.GetPollenParams) (*domain.PollenForecast, error) {
 	if err := uc.validate(input.Lat, input.Lng); err != nil {
 		return nil, err
 	}
@@ -102,6 +102,7 @@ func (uc *getForecastUseCase) dominantPollen(plants []pollen.Plant) (domain.Poll
 		if !ok {
 			continue
 		}
+		// 同じレベルなら InSeason の方を優先する (例: スギ花粉のピークは Level 3 だが、Level 2 でも InSeason ならピークに近いと判断する)
 		if p.Level > bestLevel || (p.Level == bestLevel && p.InSeason) {
 			bestType = pt
 			bestLevel = p.Level
