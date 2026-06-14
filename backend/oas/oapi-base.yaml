@@ -22,7 +22,7 @@ paths:
     $ref: "./paths/symptoms.yaml#/symptoms"
   /symptoms/{id}:
     $ref: "./paths/symptoms.yaml#/symptomsId"
-  /threshold:
+  /thresholds:
     $ref: "./paths/threshold.yaml#/threshold"
 
 components:

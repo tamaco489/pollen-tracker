@@ -42,7 +42,7 @@ type ServerInterface interface {
 	// (PUT /symptoms/{id})
 	PutSymptomsId(ctx *echo.Context, id openapi_types.UUID) error
 	// 症状が発生する花粉レベルのしきい値を取得する
-	// (GET /threshold)
+	// (GET /thresholds)
 	GetThreshold(ctx *echo.Context) error
 }
 
@@ -286,7 +286,7 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 	router.DELETE(options.BaseURL+"/symptoms/:id", wrapper.DeleteSymptomsId, options.OperationMiddlewares["DeleteSymptomsId"]...)
 	router.GET(options.BaseURL+"/symptoms/:id", wrapper.GetSymptomsId, options.OperationMiddlewares["GetSymptomsId"]...)
 	router.PUT(options.BaseURL+"/symptoms/:id", wrapper.PutSymptomsId, options.OperationMiddlewares["PutSymptomsId"]...)
-	router.GET(options.BaseURL+"/threshold", wrapper.GetThreshold, options.OperationMiddlewares["GetThreshold"]...)
+	router.GET(options.BaseURL+"/thresholds", wrapper.GetThreshold, options.OperationMiddlewares["GetThreshold"]...)
 
 }
 
@@ -760,7 +760,7 @@ type StrictServerInterface interface {
 	// (PUT /symptoms/{id})
 	PutSymptomsId(ctx context.Context, request PutSymptomsIdRequestObject) (PutSymptomsIdResponseObject, error)
 	// 症状が発生する花粉レベルのしきい値を取得する
-	// (GET /threshold)
+	// (GET /thresholds)
 	GetThreshold(ctx context.Context, request GetThresholdRequestObject) (GetThresholdResponseObject, error)
 }
 
