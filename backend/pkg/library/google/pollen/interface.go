@@ -2,8 +2,8 @@ package pollen
 
 import "context"
 
-// PollenClient は Google Pollen API クライアントのインターフェース
 type PollenService interface {
+	// GetForecast は指定座標・日数の花粉予報を取得して ForecastResponse に変換して返す
 	GetForecast(ctx context.Context, req *ForecastRequest) (*ForecastResponse, error)
 }
 

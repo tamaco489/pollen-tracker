@@ -15,7 +15,6 @@ import (
 	google_pollen "github.com/tamaco489/pollen-tracker/backend/pkg/library/google/pollen"
 )
 
-// NewServerContainer は全依存を配線して Server を返す
 func NewServerContainer(ctx context.Context) (*server.Server, error) {
 	l := logger.New()
 

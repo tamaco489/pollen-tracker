@@ -6,14 +6,12 @@ import (
 	"github.com/caarlos0/env/v11"
 )
 
-// Config はアプリケーション全体の設定を保持する。
 type Config struct {
 	App     AppConfig
 	TursoDB TursoDBConfig
 	Google  GoogleConfig
 }
 
-// AppConfig はアプリケーション基本設定を保持する。
 type AppConfig struct {
 	Env     Environment `env:"APP_ENV"     envDefault:"dev"`
 	Port    string      `env:"APP_PORT"    envDefault:"8080"`
@@ -24,18 +22,15 @@ func (a AppConfig) ServiceName() string {
 	return fmt.Sprintf("%s-api", a.Project)
 }
 
-// TursoDBConfig は Turso DB への接続設定を保持する。
 type TursoDBConfig struct {
 	URL       string `env:"TURSO_DATABASE_URL,required,notEmpty"`
 	AuthToken string `env:"TURSO_AUTH_TOKEN"`
 }
 
-// GoogleConfig は Google API への接続設定を保持する。
 type GoogleConfig struct {
 	PollenAPIKey string `env:"GOOGLE_POLLEN_API_KEY"`
 }
 
-// Load は環境変数から設定を読み込み、バリデーションして返す。
 func Load() (*Config, error) {
 	cfg, err := env.ParseAs[Config]()
 	if err != nil {
