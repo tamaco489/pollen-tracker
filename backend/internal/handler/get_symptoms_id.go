@@ -5,10 +5,10 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/oapi-codegen/runtime/types"
+
 	"github.com/tamaco489/pollen-tracker/backend/internal/gen"
 	"github.com/tamaco489/pollen-tracker/backend/pkg/errors/httperror"
-
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 func (h *Handler) GetSymptomsId(_ context.Context, _ gen.GetSymptomsIdRequestObject) (gen.GetSymptomsIdResponseObject, error) {
@@ -16,8 +16,8 @@ func (h *Handler) GetSymptomsId(_ context.Context, _ gen.GetSymptomsIdRequestObj
 	case 0:
 		return gen.GetSymptomsId200JSONResponse{
 			CreatedAt:      time.Date(2026, 5, 25, 10, 0, 0, 0, time.UTC),
-			Date:           openapi_types.Date{Time: time.Date(2026, 5, 25, 0, 0, 0, 0, time.UTC)},
-			Id:             openapi_types.UUID{},
+			Date:           types.Date{Time: time.Date(2026, 5, 25, 0, 0, 0, 0, time.UTC)},
+			Id:             types.UUID{},
 			Itchy:          2,
 			Note:           "stub response",
 			PollenLevel:    3,
