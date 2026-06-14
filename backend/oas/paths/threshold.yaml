@@ -1,0 +1,27 @@
+threshold:
+  get:
+    summary: 症状が発生する花粉レベルのしきい値を取得する
+    description: |-
+      - 過去の症状ログと花粉レベルから、症状が発生しやすい花粉レベルの中央値をしきい値として返す
+      - サンプルが不足している場合はフォールバック値 (level 3) を返し、is_estimated が true になる
+    operationId: GetThreshold
+    responses:
+      "200":
+        description: しきい値の取得成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/threshold.yaml#/ThresholdResponse"
+            example:
+              threshold: 3
+              sample_count: 12
+              is_estimated: false
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"

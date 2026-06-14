@@ -73,6 +73,37 @@ func (q *Queries) GetMonthlyStats(ctx context.Context, db DBTX, arg GetMonthlySt
 	return items, nil
 }
 
+const getSymptomPollenLevels = `-- name: GetSymptomPollenLevels :many
+SELECT "pollen_level"
+FROM "symptoms"
+WHERE "sneezing" + "runny" + "itchy" > 0
+    AND "pollen_level" > 0
+ORDER BY "pollen_level" ASC
+`
+
+func (q *Queries) GetSymptomPollenLevels(ctx context.Context, db DBTX) ([]int64, error) {
+	rows, err := db.QueryContext(ctx, getSymptomPollenLevels)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var pollen_level int64
+		if err := rows.Scan(&pollen_level); err != nil {
+			return nil, err
+		}
+		items = append(items, pollen_level)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSymptoms = `-- name: GetSymptoms :many
 SELECT
     "id",

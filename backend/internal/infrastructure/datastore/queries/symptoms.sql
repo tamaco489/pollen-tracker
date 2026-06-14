@@ -67,6 +67,13 @@ WHERE "date" BETWEEN sqlc.arg('from') AND sqlc.arg('to')
 GROUP BY strftime('%Y-%m', "date")
 ORDER BY period_key ASC;
 
+-- name: GetSymptomPollenLevels :many
+SELECT "pollen_level"
+FROM "symptoms"
+WHERE "sneezing" + "runny" + "itchy" > 0
+    AND "pollen_level" > 0
+ORDER BY "pollen_level" ASC;
+
 -- name: InsertSymptom :exec
 INSERT INTO "symptoms" (
     "id",

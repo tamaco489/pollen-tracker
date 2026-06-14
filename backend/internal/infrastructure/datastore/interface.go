@@ -31,3 +31,8 @@ type GetStatsRepository interface {
 	// GetMonthlyStats は月次集計データを取得する
 	GetMonthlyStats(ctx context.Context, from, to time.Time) ([]dto.StatsItem, error)
 }
+
+type GetThresholdRepository interface {
+	// GetSymptomPollenLevels は症状が記録された日の花粉レベル一覧を昇順で返す
+	GetSymptomPollenLevels(ctx context.Context) ([]int64, error)
+}

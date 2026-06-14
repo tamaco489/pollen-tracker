@@ -1,0 +1,21 @@
+ThresholdResponse:
+  type: object
+  required:
+    - threshold
+    - sample_count
+    - is_estimated
+  properties:
+    threshold:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 5
+      description: "推定しきい値の花粉レベル (1: 少ない / 5: 極めて多い)"
+    sample_count:
+      type: integer
+      format: int32
+      minimum: 0
+      description: 推定に使用したサンプル数
+    is_estimated:
+      type: boolean
+      description: "サンプル不足のためフォールバック値を使用した場合 true"
