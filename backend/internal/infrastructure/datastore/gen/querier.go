@@ -9,7 +9,9 @@ import (
 )
 
 type Querier interface {
+	GetMonthlyStats(ctx context.Context, db DBTX, arg GetMonthlyStatsParams) ([]GetMonthlyStatsRow, error)
 	GetSymptoms(ctx context.Context, db DBTX, arg GetSymptomsParams) ([]Symptom, error)
+	GetWeeklyStats(ctx context.Context, db DBTX, arg GetWeeklyStatsParams) ([]GetWeeklyStatsRow, error)
 	InsertSymptom(ctx context.Context, db DBTX, arg InsertSymptomParams) error
 	UpdateSymptom(ctx context.Context, db DBTX, arg UpdateSymptomParams) (Symptom, error)
 }

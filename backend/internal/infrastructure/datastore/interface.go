@@ -23,3 +23,11 @@ type PutSymptomsRepository interface {
 	// 対象が存在しない場合は sentinel.ErrNotFound を返す
 	UpdateSymptom(ctx context.Context, s *dto.UpdateSymptoms) (*dto.GetSymptoms, error)
 }
+
+type GetStatsRepository interface {
+	// GetWeeklyStats は週次集計データを取得する
+	GetWeeklyStats(ctx context.Context, from, to time.Time) ([]dto.StatsItem, error)
+
+	// GetMonthlyStats は月次集計データを取得する
+	GetMonthlyStats(ctx context.Context, from, to time.Time) ([]dto.StatsItem, error)
+}

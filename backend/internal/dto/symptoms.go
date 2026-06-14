@@ -42,3 +42,13 @@ type UpdateSymptoms struct {
 	Note           string
 	UpdatedAt      time.Time
 }
+
+type StatsItem struct {
+	StartDate      time.Time
+	EndDate        time.Time
+	AvgSneezing    float64
+	AvgRunny       float64
+	AvgItchy       float64
+	AvgPollenLevel float64
+	Count          int64
+}

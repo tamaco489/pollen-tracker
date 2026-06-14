@@ -35,8 +35,15 @@ func NewServerContainer(ctx context.Context) (*server.Server, error) {
 	getSymptomsUseCase := usecase.NewGetSymptoms(symptomsRepo)
 	createSymptomsUseCase := usecase.NewCreateSymptoms(symptomsRepo)
 	putSymptomsUseCase := usecase.NewPutSymptoms(symptomsRepo)
+	getStatsUseCase := usecase.NewGetStats(symptomsRepo)
 
-	h := handler.NewHandler(pollenUseCase, getSymptomsUseCase, createSymptomsUseCase, putSymptomsUseCase)
+	h := handler.NewHandler(
+		pollenUseCase,
+		getStatsUseCase,
+		getSymptomsUseCase,
+		createSymptomsUseCase,
+		putSymptomsUseCase,
+	)
 
 	srv, err := server.NewServer(ctx, l, cfg, conn, h)
 	if err != nil {
