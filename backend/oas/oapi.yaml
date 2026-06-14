@@ -407,6 +407,33 @@ paths:
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
+  /threshold:
+    get:
+      summary: 症状が発生する花粉レベルのしきい値を取得する
+      description: |-
+        - 過去の症状ログと花粉レベルから、症状が発生しやすい花粉レベルの中央値をしきい値として返す
+        - サンプルが不足している場合はフォールバック値 (level 3) を返し、is_estimated が true になる
+      operationId: GetThreshold
+      responses:
+        '200':
+          description: しきい値の取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThresholdResponse'
+              example:
+                threshold: 3
+                sample_count: 12
+                is_estimated: false
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+              example:
+                error: Internal server error
+                code: INTERNAL_SERVER_ERROR
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -754,3 +781,24 @@ components:
           default: ''
           maxLength: 200
           description: フリーメモ (最大 200 文字)。省略時は空文字として送信
+    ThresholdResponse:
+      type: object
+      required:
+        - threshold
+        - sample_count
+        - is_estimated
+      properties:
+        threshold:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: '推定しきい値の花粉レベル (1: 少ない / 5: 極めて多い)'
+        sample_count:
+          type: integer
+          format: int32
+          minimum: 0
+          description: 推定に使用したサンプル数
+        is_estimated:
+          type: boolean
+          description: サンプル不足のためフォールバック値を使用した場合 true

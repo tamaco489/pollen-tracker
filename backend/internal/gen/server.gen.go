@@ -41,6 +41,9 @@ type ServerInterface interface {
 	// 症状ログを更新する
 	// (PUT /symptoms/{id})
 	PutSymptomsId(ctx *echo.Context, id openapi_types.UUID) error
+	// 症状が発生する花粉レベルのしきい値を取得する
+	// (GET /threshold)
+	GetThreshold(ctx *echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -217,6 +220,17 @@ func (w *ServerInterfaceWrapper) PutSymptomsId(ctx *echo.Context) error {
 	return err
 }
 
+// GetThreshold converts echo context to params.
+func (w *ServerInterfaceWrapper) GetThreshold(ctx *echo.Context) error {
+	var err error
+
+	ctx.Set(string(ApiKeyAuthScopes), []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetThreshold(ctx)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -272,6 +286,7 @@ func RegisterHandlersWithOptions(router EchoRouter, si ServerInterface, options 
 	router.DELETE(options.BaseURL+"/symptoms/:id", wrapper.DeleteSymptomsId, options.OperationMiddlewares["DeleteSymptomsId"]...)
 	router.GET(options.BaseURL+"/symptoms/:id", wrapper.GetSymptomsId, options.OperationMiddlewares["GetSymptomsId"]...)
 	router.PUT(options.BaseURL+"/symptoms/:id", wrapper.PutSymptomsId, options.OperationMiddlewares["PutSymptomsId"]...)
+	router.GET(options.BaseURL+"/threshold", wrapper.GetThreshold, options.OperationMiddlewares["GetThreshold"]...)
 
 }
 
@@ -683,6 +698,41 @@ func (response PutSymptomsId500JSONResponse) VisitPutSymptomsIdResponse(w http.R
 	return err
 }
 
+type GetThresholdRequestObject struct {
+}
+
+type GetThresholdResponseObject interface {
+	VisitGetThresholdResponse(w http.ResponseWriter) error
+}
+
+type GetThreshold200JSONResponse ThresholdResponse
+
+func (response GetThreshold200JSONResponse) VisitGetThresholdResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetThreshold500JSONResponse InternalServerError
+
+func (response GetThreshold500JSONResponse) VisitGetThresholdResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// ヘルスチェック
@@ -709,6 +759,9 @@ type StrictServerInterface interface {
 	// 症状ログを更新する
 	// (PUT /symptoms/{id})
 	PutSymptomsId(ctx context.Context, request PutSymptomsIdRequestObject) (PutSymptomsIdResponseObject, error)
+	// 症状が発生する花粉レベルのしきい値を取得する
+	// (GET /threshold)
+	GetThreshold(ctx context.Context, request GetThresholdRequestObject) (GetThresholdResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx *echo.Context, request any) (any, error)
@@ -925,6 +978,29 @@ func (sh *strictHandler) PutSymptomsId(ctx *echo.Context, id openapi_types.UUID)
 		return err
 	} else if validResponse, ok := response.(PutSymptomsIdResponseObject); ok {
 		return validResponse.VisitPutSymptomsIdResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetThreshold operation middleware
+func (sh *strictHandler) GetThreshold(ctx *echo.Context) error {
+	var request GetThresholdRequestObject
+
+	handler := func(ctx *echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetThreshold(ctx.Request().Context(), request.(GetThresholdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetThreshold")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetThresholdResponseObject); ok {
+		return validResponse.VisitGetThresholdResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

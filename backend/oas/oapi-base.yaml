@@ -22,6 +22,8 @@ paths:
     $ref: "./paths/symptoms.yaml#/symptoms"
   /symptoms/{id}:
     $ref: "./paths/symptoms.yaml#/symptomsId"
+  /threshold:
+    $ref: "./paths/threshold.yaml#/threshold"
 
 components:
   securitySchemes:

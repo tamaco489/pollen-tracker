@@ -252,6 +252,18 @@ type SymptomsListResponse struct {
 	Total int32 `json:"total"`
 }
 
+// ThresholdResponse defines model for ThresholdResponse.
+type ThresholdResponse struct {
+	// IsEstimated サンプル不足のためフォールバック値を使用した場合 true
+	IsEstimated bool `json:"is_estimated"`
+
+	// SampleCount 推定に使用したサンプル数
+	SampleCount int32 `json:"sample_count"`
+
+	// Threshold 推定しきい値の花粉レベル (1: 少ない / 5: 極めて多い)
+	Threshold int32 `json:"threshold"`
+}
+
 // apiKeyAuthContextKey is the context key for ApiKeyAuth security scheme
 type apiKeyAuthContextKey string
 
