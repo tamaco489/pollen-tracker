@@ -24,49 +24,48 @@ Records daily symptom intensity and correlates it with real-time pollen data fro
 
 ```text
 pollen-tracker/
-├── backend/                         # Go Lambda (Echo v5)
-│   ├── cmd/lambda/                  # Lambda entrypoint
+├── backend/                    # Go Lambda (Echo v5)
+│   ├── cmd/lambda/             # Lambda entrypoint
 │   ├── internal/
-│   │   ├── di/                      # Dependency injection container
-│   │   ├── domain/                  # Domain entities & constants (PollenType etc.)
-│   │   ├── dto/                     # Data transfer objects between layers
-│   │   ├── gen/                     # oapi-codegen generated — do not edit manually
-│   │   ├── handler/                 # HTTP handlers (one file per endpoint)
-│   │   ├── infrastructure/
-│   │   │   └── datastore/           # Repository implementations
-│   │   │       ├── gen/             # sqlc generated — do not edit manually
-│   │   │       └── queries/         # SQL query files (.sql)
-│   │   ├── server/                  # Echo server setup & error handler
-│   │   └── usecase/                 # Business logic (input / output / usecase)
-│   ├── oas/                         # OpenAPI spec (split by resource)
-│   │   ├── components/              # Schemas, security definitions
-│   │   ├── config/                  # oapi-codegen config files
-│   │   ├── paths/                   # Path definitions per resource
-│   │   ├── oapi-base.yaml           # Root spec with $ref links
-│   │   └── oapi.yaml                # Bundled spec (auto-generated)
+│   │   ├── di/                 # Dependency injection container
+│   │   ├── domain/             # Domain entities & constants (PollenType etc.)
+│   │   ├── dto/                # Data transfer objects between layers
+│   │   ├── gen/                # oapi-codegen generated — do not edit manually
+│   │   ├── handler/            # HTTP handlers (one file per endpoint)
+│   │   ├── infrastructure/     # Repository implementations & sqlc generated code
+│   │   ├── server/             # Echo server setup & error handler
+│   │   └── usecase/            # Business logic
+│   ├── oas/                    # OpenAPI spec (split by resource)
+│   │   ├── components/         # Schemas, security definitions
+│   │   ├── config/             # oapi-codegen config files
+│   │   └── paths/              # Path definitions per resource
 │   ├── pkg/
-│   │   ├── config/                  # Environment variable parsing (caarlos0/env)
-│   │   ├── errors/                  # Sentinel & HTTP error definitions
-│   │   ├── infrastructure/          # Turso DB connection
-│   │   ├── library/google/pollen/   # Google Pollen API client
-│   │   ├── logger/                  # Structured logger (slog)
-│   │   └── utils/                   # Utility functions
+│   │   ├── config/             # Environment variable parsing (caarlos0/env)
+│   │   ├── errors/             # Sentinel & HTTP error definitions
+│   │   ├── infrastructure/     # Turso DB connection
+│   │   ├── library/            # External API clients (Google Pollen API etc.)
+│   │   ├── logger/             # Structured logger (slog)
+│   │   └── utils/              # Utility functions
 │   ├── tools/
-│   │   ├── httprequest/             # VS Code REST Client test files
-│   │   ├── migrations/              # DB migrations (goose)
-│   │   │   ├── cmd/                 # Migration runner (go run)
-│   │   │   └── sql/                 # goose SQL files
-│   │   └── sqlc/                    # sqlc configuration (sqlc.yaml)
+│   │   ├── httprequest/        # VS Code REST Client test files
+│   │   ├── migrations/         # DB migrations (goose SQL files & runner)
+│   │   └── sqlc/               # sqlc configuration (sqlc.yaml)
 │   └── Makefile
 │
-├── mobile/                          # React Native (Expo)
-│   ├── assets/                      # Icons, splash images
-│   └── src/                         # Feature-based source code
+├── mobile/                     # React Native (Expo)
+│   ├── assets/                 # Icons, splash images
+│   └── src/                    # Feature-based source code
 │
-├── infra/                           # AWS CDK (TypeScript)
+├── infra/                      # AWS CDK (TypeScript)
+│   ├── bin/                    # CDK App entrypoint
+│   ├── config/                 # Environment config (EnvConfig)
+│   ├── lib/
+│   │   ├── stacks/             # Stack definitions
+│   │   └── constructs/         # Custom L3 constructs
+│   └── test/                   # Jest unit tests
 │
 ├── .github/
-│   ├── workflows/                   # CI/CD workflows
+│   ├── workflows/              # CI/CD workflows
 │   └── PULL_REQUEST_TEMPLATE.md
 │
 └── docs/
