@@ -12,6 +12,7 @@ import (
 	"github.com/tamaco489/pollen-tracker/backend/pkg/utils"
 )
 
+// InsertSymptom はユーザーの花粉症状を記録する
 func (r *symptomsRepository) InsertSymptom(ctx context.Context, s *dto.CreateSymptoms) error {
 	err := r.queries.InsertSymptom(ctx, r.db.DB, gen.InsertSymptomParams{
 		ID:             s.ID.String(),
