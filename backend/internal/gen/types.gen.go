@@ -103,10 +103,22 @@ type InternalServerError = ErrorResponse
 // NotFoundError defines model for NotFoundError.
 type NotFoundError = ErrorResponse
 
+// PollenForecastItem defines model for PollenForecastItem.
+type PollenForecastItem struct {
+	// Date 予報日 (YYYY-MM-DD)
+	Date openapi_types.Date `json:"date"`
+
+	// Level 花粉レベル (1: 少ない / 5: 極めて多い)
+	Level int32 `json:"level"`
+}
+
 // PollenResponse defines model for PollenResponse.
 type PollenResponse struct {
 	// Date 取得日 (YYYY-MM-DD)
 	Date openapi_types.Date `json:"date"`
+
+	// Forecast 翌日以降の花粉予報 (最大 4 日分)
+	Forecast []PollenForecastItem `json:"forecast"`
 
 	// Level 花粉レベル (1: 少ない / 2: やや多い / 3: 多い / 4: 非常に多い / 5: 極めて多い)
 	Level int32 `json:"level"`

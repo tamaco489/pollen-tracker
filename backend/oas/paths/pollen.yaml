@@ -4,6 +4,7 @@ get:
     - 緯度・経度をもとに Google Pollen API を呼び出し、指定日の花粉レベル (1〜5) を返す
     - date を省略した場合は当日のデータを返す
     - 現在シーズンのメイン花粉種と season_info (ピーク期間・特徴・飛散地域) も合わせて返す
+    - forecast には指定日の翌日以降 (最大 4 日分) の花粉予報を含む
   operationId: GetPollen
   parameters:
     - name: lat
@@ -34,6 +35,23 @@ get:
         application/json:
           schema:
             $ref: "../components/schemas/pollen.yaml#/PollenResponse"
+          example:
+            date: "2026-06-14"
+            level: 2
+            pollen_type: "GRASS"
+            season_info:
+              peak: "5月〜10月"
+              characteristics: "くしゃみ・鼻水・目のかゆみ"
+              region: "全国"
+            forecast:
+              - date: "2026-06-15"
+                level: 3
+              - date: "2026-06-16"
+                level: 2
+              - date: "2026-06-17"
+                level: 1
+              - date: "2026-06-18"
+                level: 1
     "400":
       description: パラメータ不正
       content:
