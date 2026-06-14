@@ -119,3 +119,65 @@ func (q *Queries) InsertSymptom(ctx context.Context, db DBTX, arg InsertSymptomP
 	)
 	return err
 }
+
+const updateSymptom = `-- name: UpdateSymptom :one
+UPDATE "symptoms"
+SET
+    "sneezing"        = ?1,
+    "runny"           = ?2,
+    "itchy"           = ?3,
+    "pollen_level"    = ?4,
+    "took_medication" = ?5,
+    "note"            = ?6,
+    "updated_at"      = ?7
+WHERE "id" = ?8
+RETURNING
+    "id",
+    "date",
+    "sneezing",
+    "runny",
+    "itchy",
+    "pollen_level",
+    "took_medication",
+    "note",
+    "created_at",
+    "updated_at"
+`
+
+type UpdateSymptomParams struct {
+	Sneezing       int64  `json:"sneezing"`
+	Runny          int64  `json:"runny"`
+	Itchy          int64  `json:"itchy"`
+	PollenLevel    int64  `json:"pollen_level"`
+	TookMedication int64  `json:"took_medication"`
+	Note           string `json:"note"`
+	UpdatedAt      string `json:"updated_at"`
+	ID             string `json:"id"`
+}
+
+func (q *Queries) UpdateSymptom(ctx context.Context, db DBTX, arg UpdateSymptomParams) (Symptom, error) {
+	row := db.QueryRowContext(ctx, updateSymptom,
+		arg.Sneezing,
+		arg.Runny,
+		arg.Itchy,
+		arg.PollenLevel,
+		arg.TookMedication,
+		arg.Note,
+		arg.UpdatedAt,
+		arg.ID,
+	)
+	var i Symptom
+	err := row.Scan(
+		&i.ID,
+		&i.Date,
+		&i.Sneezing,
+		&i.Runny,
+		&i.Itchy,
+		&i.PollenLevel,
+		&i.TookMedication,
+		&i.Note,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

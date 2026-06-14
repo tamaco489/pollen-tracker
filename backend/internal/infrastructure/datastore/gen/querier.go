@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	GetSymptoms(ctx context.Context, db DBTX, arg GetSymptomsParams) ([]Symptom, error)
 	InsertSymptom(ctx context.Context, db DBTX, arg InsertSymptomParams) error
+	UpdateSymptom(ctx context.Context, db DBTX, arg UpdateSymptomParams) (Symptom, error)
 }
 
 var _ Querier = (*Queries)(nil)
