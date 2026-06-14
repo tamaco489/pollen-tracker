@@ -33,12 +33,10 @@ func (uc *getStatsUseCase) GetStats(ctx context.Context, input gen.GetStatsParam
 		to = input.To.Time
 	}
 
-	var (
-		items []gen.StatsItem
-		err   error
-	)
+	var items []gen.StatsItem
 
 	switch input.Period {
+	// 週次集計
 	case gen.Weekly:
 		rows, e := uc.repo.GetWeeklyStats(ctx, from, to)
 		if e != nil {
@@ -56,6 +54,8 @@ func (uc *getStatsUseCase) GetStats(ctx context.Context, input gen.GetStatsParam
 				Count:          int32(r.Count),
 			})
 		}
+
+	// 月次集計
 	case gen.Monthly:
 		rows, e := uc.repo.GetMonthlyStats(ctx, from, to)
 		if e != nil {
@@ -73,10 +73,6 @@ func (uc *getStatsUseCase) GetStats(ctx context.Context, input gen.GetStatsParam
 				Count:          int32(r.Count),
 			})
 		}
-	}
-
-	if err != nil {
-		return nil, err
 	}
 
 	return &gen.StatsResponse{
