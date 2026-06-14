@@ -1,7 +1,5 @@
-// Package httperror provides HTTP error response types and constants.
 package httperror
 
-// ErrorCode represents an HTTP error code identifier.
 type ErrorCode string
 
 func (e ErrorCode) String() string { return string(e) }

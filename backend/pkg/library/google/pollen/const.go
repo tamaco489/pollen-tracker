@@ -1,6 +1,5 @@
 package pollen
 
-// PollenLevel は Google Pollen API の花粉指数の値域を表す型
 type PollenLevel int
 
 const (

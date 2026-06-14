@@ -7,7 +7,6 @@ import (
 
 var defaultLogger *Logger
 
-// Init initializes the global logger with the given configuration.
 func Init(config Config) {
 	var level slog.Level
 	switch config.Level {
@@ -42,12 +41,10 @@ func Init(config Config) {
 	slog.SetDefault(defaultLogger.logger)
 }
 
-// InitDefault initializes the global logger with default configuration.
 func InitDefault() {
 	Init(Config{Level: LevelInfo, Format: "json"})
 }
 
-// GetLogger returns the global logger instance.
 func GetLogger() *Logger {
 	if defaultLogger == nil {
 		InitDefault()

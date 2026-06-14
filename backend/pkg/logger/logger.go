@@ -1,4 +1,3 @@
-// Package logger は構造化ログ機能を提供する
 package logger
 
 import (
@@ -7,7 +6,6 @@ import (
 	"os"
 )
 
-// LogLevel はログレベルを表す型
 type LogLevel string
 
 const (
@@ -17,18 +15,15 @@ const (
 	LevelError LogLevel = "error"
 )
 
-// Config はロガーの設定
 type Config struct {
 	Level  LogLevel
 	Format string // "json" or "text"
 }
 
-// Logger は slog.Logger のラッパー
 type Logger struct {
 	logger *slog.Logger
 }
 
-// New はデフォルト設定で Logger を生成して返す
 func New() *Logger {
 	opts := &slog.HandlerOptions{
 		Level: slog.LevelInfo,

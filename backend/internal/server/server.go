@@ -25,7 +25,6 @@ type Server struct {
 	done   chan struct{}
 }
 
-// NewServer は設定・DB 接続・ルーターを受け取り Server を返す
 func NewServer(ctx context.Context, l *logger.Logger, cfg *config.Config, conn *datastore.DB, h *handler.Handler) (*Server, error) {
 	e := echo.New()
 
