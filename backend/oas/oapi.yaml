@@ -34,7 +34,7 @@ paths:
               example:
                 error: Internal server error
                 code: INTERNAL_SERVER_ERROR
-  /pollen:
+  /pollens:
     get:
       summary: 指定座標の花粉レベルを取得する
       description: |-
@@ -71,6 +71,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PollenResponse'
+        '400':
+          description: パラメータ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+              example:
+                error: Invalid query parameter
+                code: BAD_REQUEST
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+              example:
+                error: Internal server error
+                code: INTERNAL_SERVER_ERROR
+  /stats:
+    get:
+      summary: 症状・花粉レベルの集計データを取得する
+      description: |-
+        - period に応じて週次または月次の集計データを返す
+        - 各期間の平均くしゃみ・鼻水・目のかゆみ強度と平均花粉レベルを含む
+        - from を省略すると当日から 30 日前、to を省略すると当日を終端とする
+      operationId: GetStats
+      parameters:
+        - name: period
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/StatsPeriod'
+          description: 集計単位 (weekly または monthly)
+          example: weekly
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: 集計開始日 (YYYY-MM-DD)。省略時は 30 日前
+          example: '2026-06-01'
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: 集計終了日 (YYYY-MM-DD)。省略時は当日
+          example: '2026-06-14'
+      responses:
+        '200':
+          description: 集計データの取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+              example:
+                period: weekly
+                items:
+                  - start_date: '2026-06-08'
+                    end_date: '2026-06-14'
+                    avg_sneezing: 2.5
+                    avg_runny: 3
+                    avg_itchy: 2
+                    avg_pollen_level: 3.5
+                    count: 5
+                  - start_date: '2026-06-01'
+                    end_date: '2026-06-07'
+                    avg_sneezing: 1.5
+                    avg_runny: 2
+                    avg_itchy: 1.5
+                    avg_pollen_level: 2
+                    count: 4
         '400':
           description: パラメータ不正
           content:
@@ -405,6 +479,63 @@ components:
           type: string
           enum:
             - BAD_REQUEST
+    StatsPeriod:
+      type: string
+      enum:
+        - weekly
+        - monthly
+      description: '集計単位 (weekly: 週次 / monthly: 月次)'
+    StatsItem:
+      type: object
+      required:
+        - start_date
+        - end_date
+        - avg_sneezing
+        - avg_runny
+        - avg_itchy
+        - avg_pollen_level
+        - count
+      properties:
+        start_date:
+          type: string
+          format: date
+          description: 集計期間の開始日 (YYYY-MM-DD)
+        end_date:
+          type: string
+          format: date
+          description: 集計期間の終了日 (YYYY-MM-DD)
+        avg_sneezing:
+          type: number
+          format: float
+          description: 期間内のくしゃみ強度の平均 (小数点第 1 位)
+        avg_runny:
+          type: number
+          format: float
+          description: 期間内の鼻水強度の平均 (小数点第 1 位)
+        avg_itchy:
+          type: number
+          format: float
+          description: 期間内の目のかゆみ強度の平均 (小数点第 1 位)
+        avg_pollen_level:
+          type: number
+          format: float
+          description: 期間内の花粉レベルの平均 (小数点第 1 位)
+        count:
+          type: integer
+          format: int32
+          description: 期間内の記録件数
+    StatsResponse:
+      type: object
+      required:
+        - period
+        - items
+      properties:
+        period:
+          $ref: '#/components/schemas/StatsPeriod'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatsItem'
     SymptomResponse:
       type: object
       required:

@@ -14,8 +14,10 @@ security:
 paths:
   /health:
     $ref: "./paths/health.yaml"
-  /pollen:
+  /pollens:
     $ref: "./paths/pollen.yaml"
+  /stats:
+    $ref: "./paths/stats.yaml#/stats"
   /symptoms:
     $ref: "./paths/symptoms.yaml#/symptoms"
   /symptoms/{id}:
