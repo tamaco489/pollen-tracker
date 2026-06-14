@@ -32,3 +32,8 @@ type GetStatsUseCase interface {
 	// GetStats は週次または月次の症状・花粉レベル集計データを返す
 	GetStats(ctx context.Context, input gen.GetStatsParams) (*gen.StatsResponse, error)
 }
+
+type GetThresholdUseCase interface {
+	// GetThreshold は症状が発生する花粉レベルのしきい値を返す
+	GetThreshold(ctx context.Context) (*gen.ThresholdResponse, error)
+}

@@ -7,6 +7,7 @@ import (
 type Handler struct {
 	getPollenUseCase      usecase.GetForecastUseCase
 	getStatsUseCase       usecase.GetStatsUseCase
+	getThresholdUseCase   usecase.GetThresholdUseCase
 	getSymptomsUseCase    usecase.GetSymptomsUseCase
 	createSymptomsUseCase usecase.CreateSymptomsUseCase
 	putSymptomsUseCase    usecase.PutSymptomsUseCase
@@ -15,6 +16,7 @@ type Handler struct {
 func NewHandler(
 	getPollenUseCase usecase.GetForecastUseCase,
 	getStatsUseCase usecase.GetStatsUseCase,
+	getThresholdUseCase usecase.GetThresholdUseCase,
 	getSymptomsUseCase usecase.GetSymptomsUseCase,
 	createSymptomsUseCase usecase.CreateSymptomsUseCase,
 	putSymptomsUseCase usecase.PutSymptomsUseCase,
@@ -22,6 +24,7 @@ func NewHandler(
 	return &Handler{
 		getPollenUseCase:      getPollenUseCase,
 		getStatsUseCase:       getStatsUseCase,
+		getThresholdUseCase:   getThresholdUseCase,
 		getSymptomsUseCase:    getSymptomsUseCase,
 		createSymptomsUseCase: createSymptomsUseCase,
 		putSymptomsUseCase:    putSymptomsUseCase,

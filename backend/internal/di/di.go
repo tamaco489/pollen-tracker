@@ -36,10 +36,12 @@ func NewServerContainer(ctx context.Context) (*server.Server, error) {
 	createSymptomsUseCase := usecase.NewCreateSymptoms(symptomsRepo)
 	putSymptomsUseCase := usecase.NewPutSymptoms(symptomsRepo)
 	getStatsUseCase := usecase.NewGetStats(symptomsRepo)
+	getThresholdUseCase := usecase.NewGetThreshold(symptomsRepo)
 
 	h := handler.NewHandler(
 		pollenUseCase,
 		getStatsUseCase,
+		getThresholdUseCase,
 		getSymptomsUseCase,
 		createSymptomsUseCase,
 		putSymptomsUseCase,
