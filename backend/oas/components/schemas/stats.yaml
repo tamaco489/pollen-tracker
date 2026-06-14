@@ -1,0 +1,59 @@
+StatsPeriod:
+  type: string
+  enum:
+    - weekly
+    - monthly
+  description: "集計単位 (weekly: 週次 / monthly: 月次)"
+
+StatsItem:
+  type: object
+  required:
+    - start_date
+    - end_date
+    - avg_sneezing
+    - avg_runny
+    - avg_itchy
+    - avg_pollen_level
+    - count
+  properties:
+    start_date:
+      type: string
+      format: date
+      description: 集計期間の開始日 (YYYY-MM-DD)
+    end_date:
+      type: string
+      format: date
+      description: 集計期間の終了日 (YYYY-MM-DD)
+    avg_sneezing:
+      type: number
+      format: float
+      description: 期間内のくしゃみ強度の平均 (小数点第 1 位)
+    avg_runny:
+      type: number
+      format: float
+      description: 期間内の鼻水強度の平均 (小数点第 1 位)
+    avg_itchy:
+      type: number
+      format: float
+      description: 期間内の目のかゆみ強度の平均 (小数点第 1 位)
+    avg_pollen_level:
+      type: number
+      format: float
+      description: 期間内の花粉レベルの平均 (小数点第 1 位)
+    count:
+      type: integer
+      format: int32
+      description: 期間内の記録件数
+
+StatsResponse:
+  type: object
+  required:
+    - period
+    - items
+  properties:
+    period:
+      $ref: "#/StatsPeriod"
+    items:
+      type: array
+      items:
+        $ref: "#/StatsItem"

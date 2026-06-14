@@ -37,6 +37,36 @@ RETURNING
     "created_at",
     "updated_at";
 
+-- name: GetWeeklyStats :many
+SELECT
+    strftime('%Y-W%W', "date")              AS period_key,
+    MIN("date")                             AS start_date,
+    MAX("date")                             AS end_date,
+    ROUND(AVG(CAST("sneezing"     AS REAL)), 1) AS avg_sneezing,
+    ROUND(AVG(CAST("runny"        AS REAL)), 1) AS avg_runny,
+    ROUND(AVG(CAST("itchy"        AS REAL)), 1) AS avg_itchy,
+    ROUND(AVG(CAST("pollen_level" AS REAL)), 1) AS avg_pollen_level,
+    COUNT(*)                                AS count
+FROM "symptoms"
+WHERE "date" BETWEEN sqlc.arg('from') AND sqlc.arg('to')
+GROUP BY strftime('%Y-W%W', "date")
+ORDER BY period_key ASC;
+
+-- name: GetMonthlyStats :many
+SELECT
+    strftime('%Y-%m', "date")               AS period_key,
+    MIN("date")                             AS start_date,
+    MAX("date")                             AS end_date,
+    ROUND(AVG(CAST("sneezing"     AS REAL)), 1) AS avg_sneezing,
+    ROUND(AVG(CAST("runny"        AS REAL)), 1) AS avg_runny,
+    ROUND(AVG(CAST("itchy"        AS REAL)), 1) AS avg_itchy,
+    ROUND(AVG(CAST("pollen_level" AS REAL)), 1) AS avg_pollen_level,
+    COUNT(*)                                AS count
+FROM "symptoms"
+WHERE "date" BETWEEN sqlc.arg('from') AND sqlc.arg('to')
+GROUP BY strftime('%Y-%m', "date")
+ORDER BY period_key ASC;
+
 -- name: InsertSymptom :exec
 INSERT INTO "symptoms" (
     "id",

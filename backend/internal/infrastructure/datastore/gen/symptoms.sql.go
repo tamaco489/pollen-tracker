@@ -9,6 +9,70 @@ import (
 	"context"
 )
 
+const getMonthlyStats = `-- name: GetMonthlyStats :many
+SELECT
+    strftime('%Y-%m', "date")               AS period_key,
+    MIN("date")                             AS start_date,
+    MAX("date")                             AS end_date,
+    ROUND(AVG(CAST("sneezing"     AS REAL)), 1) AS avg_sneezing,
+    ROUND(AVG(CAST("runny"        AS REAL)), 1) AS avg_runny,
+    ROUND(AVG(CAST("itchy"        AS REAL)), 1) AS avg_itchy,
+    ROUND(AVG(CAST("pollen_level" AS REAL)), 1) AS avg_pollen_level,
+    COUNT(*)                                AS count
+FROM "symptoms"
+WHERE "date" BETWEEN ?1 AND ?2
+GROUP BY strftime('%Y-%m', "date")
+ORDER BY period_key ASC
+`
+
+type GetMonthlyStatsParams struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+type GetMonthlyStatsRow struct {
+	PeriodKey      interface{} `json:"period_key"`
+	StartDate      interface{} `json:"start_date"`
+	EndDate        interface{} `json:"end_date"`
+	AvgSneezing    float64     `json:"avg_sneezing"`
+	AvgRunny       float64     `json:"avg_runny"`
+	AvgItchy       float64     `json:"avg_itchy"`
+	AvgPollenLevel float64     `json:"avg_pollen_level"`
+	Count          int64       `json:"count"`
+}
+
+func (q *Queries) GetMonthlyStats(ctx context.Context, db DBTX, arg GetMonthlyStatsParams) ([]GetMonthlyStatsRow, error) {
+	rows, err := db.QueryContext(ctx, getMonthlyStats, arg.From, arg.To)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMonthlyStatsRow
+	for rows.Next() {
+		var i GetMonthlyStatsRow
+		if err := rows.Scan(
+			&i.PeriodKey,
+			&i.StartDate,
+			&i.EndDate,
+			&i.AvgSneezing,
+			&i.AvgRunny,
+			&i.AvgItchy,
+			&i.AvgPollenLevel,
+			&i.Count,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSymptoms = `-- name: GetSymptoms :many
 SELECT
     "id",
@@ -51,6 +115,70 @@ func (q *Queries) GetSymptoms(ctx context.Context, db DBTX, arg GetSymptomsParam
 			&i.Note,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getWeeklyStats = `-- name: GetWeeklyStats :many
+SELECT
+    strftime('%Y-W%W', "date")              AS period_key,
+    MIN("date")                             AS start_date,
+    MAX("date")                             AS end_date,
+    ROUND(AVG(CAST("sneezing"     AS REAL)), 1) AS avg_sneezing,
+    ROUND(AVG(CAST("runny"        AS REAL)), 1) AS avg_runny,
+    ROUND(AVG(CAST("itchy"        AS REAL)), 1) AS avg_itchy,
+    ROUND(AVG(CAST("pollen_level" AS REAL)), 1) AS avg_pollen_level,
+    COUNT(*)                                AS count
+FROM "symptoms"
+WHERE "date" BETWEEN ?1 AND ?2
+GROUP BY strftime('%Y-W%W', "date")
+ORDER BY period_key ASC
+`
+
+type GetWeeklyStatsParams struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+type GetWeeklyStatsRow struct {
+	PeriodKey      interface{} `json:"period_key"`
+	StartDate      interface{} `json:"start_date"`
+	EndDate        interface{} `json:"end_date"`
+	AvgSneezing    float64     `json:"avg_sneezing"`
+	AvgRunny       float64     `json:"avg_runny"`
+	AvgItchy       float64     `json:"avg_itchy"`
+	AvgPollenLevel float64     `json:"avg_pollen_level"`
+	Count          int64       `json:"count"`
+}
+
+func (q *Queries) GetWeeklyStats(ctx context.Context, db DBTX, arg GetWeeklyStatsParams) ([]GetWeeklyStatsRow, error) {
+	rows, err := db.QueryContext(ctx, getWeeklyStats, arg.From, arg.To)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWeeklyStatsRow
+	for rows.Next() {
+		var i GetWeeklyStatsRow
+		if err := rows.Scan(
+			&i.PeriodKey,
+			&i.StartDate,
+			&i.EndDate,
+			&i.AvgSneezing,
+			&i.AvgRunny,
+			&i.AvgItchy,
+			&i.AvgPollenLevel,
+			&i.Count,
 		); err != nil {
 			return nil, err
 		}

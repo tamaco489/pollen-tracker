@@ -27,3 +27,8 @@ type PutSymptomsUseCase interface {
 	// PutSymptoms は UUID で症状ログを上書き更新する
 	PutSymptoms(ctx context.Context, id uuid.UUID, input gen.SymptomUpdateRequest) (*gen.SymptomResponse, error)
 }
+
+type GetStatsUseCase interface {
+	// GetStats は週次または月次の症状・花粉レベル集計データを返す
+	GetStats(ctx context.Context, input gen.GetStatsParams) (*gen.StatsResponse, error)
+}

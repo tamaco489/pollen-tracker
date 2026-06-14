@@ -1,0 +1,74 @@
+stats:
+  get:
+    summary: 症状・花粉レベルの集計データを取得する
+    description: |-
+      - period に応じて週次または月次の集計データを返す
+      - 各期間の平均くしゃみ・鼻水・目のかゆみ強度と平均花粉レベルを含む
+      - from を省略すると当日から 30 日前、to を省略すると当日を終端とする
+    operationId: GetStats
+    parameters:
+      - name: period
+        in: query
+        required: true
+        schema:
+          $ref: "../components/schemas/stats.yaml#/StatsPeriod"
+        description: 集計単位 (weekly または monthly)
+        example: "weekly"
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 集計開始日 (YYYY-MM-DD)。省略時は 30 日前
+        example: "2026-06-01"
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 集計終了日 (YYYY-MM-DD)。省略時は当日
+        example: "2026-06-14"
+    responses:
+      "200":
+        description: 集計データの取得成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/stats.yaml#/StatsResponse"
+            example:
+              period: "weekly"
+              items:
+                - start_date: "2026-06-08"
+                  end_date: "2026-06-14"
+                  avg_sneezing: 2.5
+                  avg_runny: 3.0
+                  avg_itchy: 2.0
+                  avg_pollen_level: 3.5
+                  count: 5
+                - start_date: "2026-06-01"
+                  end_date: "2026-06-07"
+                  avg_sneezing: 1.5
+                  avg_runny: 2.0
+                  avg_itchy: 1.5
+                  avg_pollen_level: 2.0
+                  count: 4
+      "400":
+        description: パラメータ不正
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/BadRequestError"
+            example:
+              error: "Invalid query parameter"
+              code: "BAD_REQUEST"
+      "500":
+        description: サーバーエラー
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/common.yaml#/InternalServerError"
+            example:
+              error: "Internal server error"
+              code: "INTERNAL_SERVER_ERROR"
