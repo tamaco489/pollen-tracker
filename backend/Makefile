@@ -38,7 +38,7 @@ sqlc-vet: ## sqlc 静的解析を実行する
 sqlc-lint: sqlc-diff sqlc-vet ## sqlc スキーマ差分確認と静的解析を実行する
 
 
-.PHONY: fmt lint mod build test verify
+.PHONY: fmt lint mod build build-authorizer test verify
 fmt: ## コードをフォーマットする
 	go fmt ./...
 
@@ -51,6 +51,9 @@ mod: ## go.mod / go.sum の整合性を確認する
 
 build: mod ## Lambda 関数をビルドする
 	go build -o build/bootstrap ./cmd/lambda/
+
+build-authorizer: mod ## Authorizer Lambda 関数をビルドする (arm64/Linux)
+	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o build/authorizer/bootstrap ./cmd/authorizer/
 
 test: ## テストを実行する
 	go test ./...

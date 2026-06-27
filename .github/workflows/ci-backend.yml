@@ -65,7 +65,7 @@ jobs:
           cache-dependency-path: "backend/go.sum"
 
       - name: Build
-        run: make build
+        run: make build && make build-authorizer
 
   sqlc-lint:
     name: sqlc Lint
