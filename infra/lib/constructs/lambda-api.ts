@@ -1,0 +1,178 @@
+import * as cdk from "aws-cdk-lib";
+import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
+import * as authorizers from "aws-cdk-lib/aws-apigatewayv2-authorizers";
+import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as logs from "aws-cdk-lib/aws-logs";
+import * as s3 from "aws-cdk-lib/aws-s3";
+import { Construct } from "constructs";
+
+/**
+ * LambdaApi コンストラクタプロパティ
+ *
+ * @property envName - 環境名。リソースの命名に使用する
+ * @property lambdaMemorySize - API Lambda 関数のメモリサイズ (MB)
+ * @property logRetentionDays - CloudWatch Logs のロググループ保持日数
+ * @property artifactsBucketName - Lambda ビルド成果物を格納する S3 バケット名
+ * @property secretArn - Authorizer が x-api-key を取得する Secrets Manager のシークレット ARN
+ * @property envVars - API Lambda に渡す追加の環境変数 (TURSO_DATABASE_URL 等)
+ */
+interface LambdaApiProps {
+  readonly envName: string;
+  readonly lambdaMemorySize: number;
+  readonly logRetentionDays: number;
+  readonly artifactsBucketName: string;
+  readonly secretArn: string;
+  readonly envVars?: { [key: string]: string };
+}
+
+/**
+ * API Lambda + Lambda Authorizer + HTTP API (API Gateway v2) コンストラクト
+ *
+ * arm64 / provided.al2023 で API Lambda と Authorizer Lambda を定義し、
+ * x-api-key ヘッダーを Secrets Manager で検証する Lambda Authorizer 付き HTTP API を構築する。
+ */
+export class LambdaApi extends Construct {
+  /** API Lambda 関数 */
+  readonly fn: lambda.Function;
+
+  /** API Lambda 実行ロール */
+  readonly executionRole: iam.Role;
+
+  /** HTTP API */
+  readonly httpApi: apigwv2.HttpApi;
+
+  constructor(scope: Construct, id: string, props: LambdaApiProps) {
+    super(scope, id);
+
+    const artifactsBucket = s3.Bucket.fromBucketName(
+      this,
+      "ArtifactsBucket",
+      props.artifactsBucketName,
+    );
+
+    // ---- Authorizer Lambda ----
+    const authorizerRole = new iam.Role(this, "AuthorizerRole", {
+      roleName: `${props.envName}-pollen-tracker-authorizer-role`,
+      assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+      // ref: https://docs.aws.amazon.com/ja_jp/aws-managed-policy/latest/reference/AWSLambdaBasicExecutionRole.html
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          "service-role/AWSLambdaBasicExecutionRole",
+        ),
+      ],
+    });
+
+    // Secrets Manager から API キーを取得する権限を付与
+    authorizerRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [props.secretArn],
+      }),
+    );
+
+    const authorizerFn = new lambda.Function(this, "AuthorizerFunction", {
+      functionName: `${props.envName}-pollen-tracker-authorizer`,
+      description:
+        "Lambda Authorizer — validates x-api-key header against Secrets Manager",
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      // make upload-authorizer で s3://{artifactsBucketName}/artifacts/authorizer/bootstrap.zip にアップロードされたバイナリを参照する
+      code: lambda.Code.fromBucket(
+        artifactsBucket,
+        "artifacts/authorizer/bootstrap.zip",
+      ),
+      role: authorizerRole,
+      memorySize: 128,
+      // Lambda Authorizer の標準タイムアウトは 10 秒。推奨は 1 秒以内だが保守的に 5 秒に設定
+      timeout: cdk.Duration.seconds(5),
+      environment: {
+        APP_ENV: props.envName,
+        APP_PROJECT: "authorizer",
+        SECRET_ARN: props.secretArn,
+      },
+    });
+
+    const authorizerLogGroup = authorizerFn.node.findChild(
+      "LogGroup",
+    ) as logs.LogGroup;
+    (authorizerLogGroup.node.defaultChild as logs.CfnLogGroup).retentionInDays =
+      props.logRetentionDays;
+    authorizerLogGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    // ---- HTTP Lambda Authorizer ----
+
+    const authorizer = new authorizers.HttpLambdaAuthorizer(
+      "ApiKeyAuthorizer",
+      authorizerFn,
+      {
+        // ref: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
+        identitySource: ["$request.header.x-api-key"],
+        resultsCacheTtl: cdk.Duration.minutes(5),
+        responseTypes: [authorizers.HttpLambdaResponseType.SIMPLE],
+      },
+    );
+
+    // ---- API Lambda ----
+
+    this.executionRole = new iam.Role(this, "ExecutionRole", {
+      roleName: `${props.envName}-pollen-tracker-api-role`,
+      assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+      // ref: https://docs.aws.amazon.com/ja_jp/aws-managed-policy/latest/reference/AWSLambdaBasicExecutionRole.html
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          "service-role/AWSLambdaBasicExecutionRole",
+        ),
+      ],
+    });
+
+    this.fn = new lambda.Function(this, "Function", {
+      functionName: `${props.envName}-pollen-tracker-api`,
+      description:
+        "Receives HTTP requests via API Gateway v2 and serves pollen tracker API",
+      runtime: lambda.Runtime.PROVIDED_AL2023,
+      architecture: lambda.Architecture.ARM_64,
+      handler: "bootstrap",
+      // make upload-api で s3://{artifactsBucketName}/artifacts/api/bootstrap.zip にアップロードされたバイナリを参照する
+      code: lambda.Code.fromBucket(
+        artifactsBucket,
+        "artifacts/api/bootstrap.zip",
+      ),
+      role: this.executionRole,
+      memorySize: props.lambdaMemorySize,
+      // HTTP API (v2) の統合タイムアウト上限は 30 秒のため、1 秒のバッファを設けて 29 秒に設定する
+      // ref: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-quotas.html
+      timeout: cdk.Duration.seconds(29),
+      environment: {
+        APP_ENV: props.envName,
+        APP_PORT: "8080",
+        APP_PROJECT: "pollen-tracker",
+        ...props.envVars,
+      },
+    });
+
+    const managedLogGroup = this.fn.node.findChild("LogGroup") as logs.LogGroup;
+    (managedLogGroup.node.defaultChild as logs.CfnLogGroup).retentionInDays =
+      props.logRetentionDays;
+    managedLogGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    // ---- HTTP API ----
+
+    this.httpApi = new apigwv2.HttpApi(this, "HttpApi", {
+      apiName: `${props.envName}-pollen-tracker`,
+      description: "HTTP API for pollen tracker",
+      defaultAuthorizer: authorizer,
+      defaultIntegration: new integrations.HttpLambdaIntegration(
+        "Integration",
+        this.fn,
+      ),
+    });
+
+    new cdk.CfnOutput(scope, "ApiEndpointUrl", {
+      value: this.httpApi.apiEndpoint,
+      description: "API Gateway HTTP API endpoint URL",
+    });
+  }
+}
