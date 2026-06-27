@@ -25,7 +25,8 @@ Records daily symptom intensity and correlates it with real-time pollen data fro
 ```text
 pollen-tracker/
 ├── backend/                    # Go Lambda (Echo v5)
-│   ├── cmd/lambda/             # Lambda entrypoint
+│   ├── cmd/api/                # Lambda entrypoint (Echo v5)
+│   ├── cmd/authorizer/         # Lambda Authorizer (x-api-key validation)
 │   ├── internal/
 │   │   ├── di/                 # Dependency injection container
 │   │   ├── domain/             # Domain entities & constants (PollenType etc.)
