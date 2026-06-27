@@ -38,6 +38,7 @@ jobs:
       - uses: golangci/golangci-lint-action@v6
         with:
           version: latest
+          install-mode: goinstall
           working-directory: ./backend
           args: ./...
 
@@ -74,9 +75,8 @@ jobs:
           go-version-file: "backend/go.mod"
           cache-dependency-path: "backend/go.sum"
 
-      - uses: sqlc-dev/setup-sqlc@v4
-        with:
-          sqlc-version: "latest"
+      - name: Install sqlc
+        run: go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
       - name: sqlc Lint
         run: make sqlc-lint
