@@ -3,7 +3,6 @@ package secret
 import (
 	"context"
 	"fmt"
-	"os"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -19,7 +18,7 @@ var (
 // LoadAPIKey は Secrets Manager から API キーを取得してメモリにキャッシュする。
 // 初回コールドスタート時のみ Secrets Manager を呼び出し、以降はキャッシュを返す。
 // 取得失敗時はキャッシュせず、次回呼び出し時に再試行する。
-func LoadAPIKey(ctx context.Context) ([]byte, error) {
+func LoadAPIKey(ctx context.Context, arn string) ([]byte, error) {
 	mu.RLock()
 	if len(cachedKey) > 0 {
 		key := cachedKey
@@ -35,11 +34,6 @@ func LoadAPIKey(ctx context.Context) ([]byte, error) {
 		return cachedKey, nil
 	}
 
-	secretARN := os.Getenv("SECRET_ARN")
-	if secretARN == "" {
-		return nil, fmt.Errorf("SECRET_ARN is not set")
-	}
-
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("load AWS config: %w", err)
@@ -47,7 +41,7 @@ func LoadAPIKey(ctx context.Context) ([]byte, error) {
 
 	client := secretsmanager.NewFromConfig(cfg)
 	out, err := client.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(secretARN),
+		SecretId: aws.String(arn),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("get secret value: %w", err)
