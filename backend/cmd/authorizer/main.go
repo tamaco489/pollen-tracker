@@ -75,7 +75,8 @@ func handler(ctx context.Context, event events.APIGatewayV2CustomAuthorizerV2Req
 		requestKey = event.IdentitySource[0]
 	}
 
-	authorized := subtle.ConstantTimeCompare(apiKey, []byte(requestKey)) == 1
+	const equal = 1
+	authorized := subtle.ConstantTimeCompare(apiKey, []byte(requestKey)) == equal
 	return events.APIGatewayV2CustomAuthorizerSimpleResponse{IsAuthorized: authorized}, nil
 }
 
