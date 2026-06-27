@@ -24,6 +24,13 @@ export interface EnvConfig {
 
   /** Lambda ビルド成果物を格納する S3 バケット名 */
   readonly artifactsBucketName: string;
+
+  /**
+   * Lambda Authorizer が x-api-key を取得する Secrets Manager のシークレット ARN
+   *
+   * Issue #43 (managed-secret コンストラクト) で実際の ARN に更新する。
+   */
+  readonly secretArn: string;
 }
 
 /** 開発環境設定 */
@@ -33,6 +40,8 @@ export const devConfig: EnvConfig = {
   lambdaMemorySize: 128,
   logRetentionDays: 7,
   artifactsBucketName: "dev-pollen-tracker-artifacts",
+  secretArn:
+    "arn:aws:secretsmanager:ap-northeast-1:ACCOUNT_ID:secret:dev/pollen-tracker/api-key",
 };
 
 /** 本番環境設定 */
@@ -42,4 +51,6 @@ export const prdConfig: EnvConfig = {
   lambdaMemorySize: 128,
   logRetentionDays: 7,
   artifactsBucketName: "prd-pollen-tracker-artifacts",
+  secretArn:
+    "arn:aws:secretsmanager:ap-northeast-1:ACCOUNT_ID:secret:prd/pollen-tracker/api-key",
 };
