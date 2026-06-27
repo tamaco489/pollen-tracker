@@ -75,7 +75,15 @@ jobs:
           go-version-file: "backend/go.mod"
           cache-dependency-path: "backend/go.sum"
 
+      - name: Cache sqlc binary
+        id: cache-sqlc
+        uses: actions/cache@v4
+        with:
+          path: ~/go/bin/sqlc
+          key: ${{ runner.os }}-sqlc-${{ hashFiles('backend/go.sum') }}
+
       - name: Install sqlc
+        if: steps.cache-sqlc.outputs.cache-hit != 'true'
         run: go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
       - name: sqlc Lint
