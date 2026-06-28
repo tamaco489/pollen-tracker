@@ -59,8 +59,8 @@ mod: ## go.mod / go.sum の整合性を確認する
 	git diff --exit-code go.mod go.sum
 
 build: mod ## API・Authorizer Lambda 関数をまとめてビルドする
-	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o build/api/bootstrap ./cmd/api/
-	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o build/authorizer/bootstrap ./cmd/authorizer/
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -o build/api/bootstrap ./cmd/api/
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -trimpath -o build/authorizer/bootstrap ./cmd/authorizer/
 
 
 test: ## テストを実行する
