@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 
 import { EnvConfig } from "../../config/env-config";
 import { LambdaApi } from "../constructs/lambda-api";
+import { ManagedSecret } from "../constructs/managed-secret";
 
 /**
  * PollenStack のコンストラクタプロパティ
@@ -22,12 +23,30 @@ export class PollenStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: PollenStackProps) {
     super(scope, id, props);
 
-    new LambdaApi(this, "LambdaApi", {
+    const lambdaApi = new LambdaApi(this, "LambdaApi", {
       envName: props.config.envName,
       lambdaMemorySize: props.config.lambdaMemorySize,
       logRetentionDays: props.config.logRetentionDays,
       artifactsBucketName: props.config.artifactsBucketName,
       secretArn: props.config.secretArn,
+    });
+
+    new ManagedSecret(this, "PollenApiKeySecret", {
+      secretName: `${props.config.envName}/pollen-tracker/pollen-api-key`,
+      description: "Google Pollen API キー",
+      lambdaRole: lambdaApi.executionRole,
+    });
+
+    new ManagedSecret(this, "TursoSecret", {
+      secretName: `${props.config.envName}/pollen-tracker/turso`,
+      description: "Turso 接続情報 (URL / AUTH_TOKEN)",
+      lambdaRole: lambdaApi.executionRole,
+    });
+
+    new ManagedSecret(this, "XApiKeySecret", {
+      secretName: `${props.config.envName}/pollen-tracker/api-key`,
+      description: "Lambda Authorizer が検証する x-api-key",
+      lambdaRole: lambdaApi.authorizerRole,
     });
   }
 }
