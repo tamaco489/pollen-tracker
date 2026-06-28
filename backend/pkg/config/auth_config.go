@@ -17,12 +17,7 @@ type AuthorizerConfig struct {
 	Port    string      `env:"APP_PORT"    envDefault:"8080"`
 	Project string      `env:"APP_PROJECT" envDefault:"authorizer"`
 
-	Secret secretConfig
-	cache  apiKeyCache
-}
-
-type secretConfig struct {
-	ARN string `env:"SECRET_ARN,required,notEmpty"`
+	cache apiKeyCache
 }
 
 type apiKeyCache struct {
@@ -82,7 +77,7 @@ func (c *AuthorizerConfig) fetchAuthorizerAPIKey(ctx context.Context) (string, e
 
 	client := secretsmanager.NewFromConfig(cfg)
 	out, err := client.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(c.Secret.ARN),
+		SecretId: aws.String(fmt.Sprintf("%s/pollen-tracker/api-key", c.Env)),
 	})
 	if err != nil {
 		return "", fmt.Errorf("get secret value: %w", err)
