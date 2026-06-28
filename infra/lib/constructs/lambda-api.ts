@@ -144,6 +144,15 @@ export class LambdaApi extends Construct {
         "artifacts/api/bootstrap.zip",
       ),
       role: this.executionRole,
+      // HTTP サーバーとして実装された Go バイナリを Lambda で動かすための Web Adapter
+      // ref: https://github.com/awslabs/aws-lambda-web-adapter
+      layers: [
+        lambda.LayerVersion.fromLayerVersionArn(
+          this,
+          "LambdaWebAdapterLayer",
+          "arn:aws:lambda:ap-northeast-1:753240598075:layer:LambdaAdapterLayerArm64:24",
+        ),
+      ],
       memorySize: props.lambdaMemorySize,
       // HTTP API (v2) の統合タイムアウト上限は 30 秒のため、1 秒のバッファを設けて 29 秒に設定する
       // ref: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-quotas.html
@@ -153,6 +162,8 @@ export class LambdaApi extends Construct {
         PORT: "8080",
         PROJECT: "pollen-tracker",
         SERVICE: "api-server",
+        // LWA の readiness check に /health を使用する (デフォルトの / はエラーハンドラを経由するため)
+        AWS_LWA_READINESS_CHECK_PATH: "/health",
         ...props.envVars,
       },
       logGroup: apiLogGroup,
