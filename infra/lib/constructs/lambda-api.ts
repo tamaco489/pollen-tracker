@@ -69,6 +69,12 @@ export class LambdaApi extends Construct {
       ],
     });
 
+    const authorizerLogGroup = new logs.LogGroup(this, "AuthorizerLogGroup", {
+      logGroupName: `/aws/lambda/${props.envName}-pollen-tracker-authorizer`,
+      retention: props.logRetentionDays as logs.RetentionDays,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     this.authorizerFn = new lambda.Function(this, "AuthorizerFunction", {
       functionName: `${props.envName}-pollen-tracker-authorizer`,
       description:
@@ -89,14 +95,8 @@ export class LambdaApi extends Construct {
         APP_ENV: props.envName,
         APP_PROJECT: "authorizer",
       },
+      logGroup: authorizerLogGroup,
     });
-
-    const authorizerLogGroup = this.authorizerFn.node.findChild(
-      "LogGroup",
-    ) as logs.LogGroup;
-    (authorizerLogGroup.node.defaultChild as logs.CfnLogGroup).retentionInDays =
-      props.logRetentionDays;
-    authorizerLogGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
     // ---- HTTP Lambda Authorizer ----
 
@@ -124,6 +124,12 @@ export class LambdaApi extends Construct {
       ],
     });
 
+    const apiLogGroup = new logs.LogGroup(this, "ApiLogGroup", {
+      logGroupName: `/aws/lambda/${props.envName}-pollen-tracker-api`,
+      retention: props.logRetentionDays as logs.RetentionDays,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     this.fn = new lambda.Function(this, "Function", {
       functionName: `${props.envName}-pollen-tracker-api`,
       description:
@@ -147,12 +153,8 @@ export class LambdaApi extends Construct {
         APP_PROJECT: "pollen-tracker",
         ...props.envVars,
       },
+      logGroup: apiLogGroup,
     });
-
-    const managedLogGroup = this.fn.node.findChild("LogGroup") as logs.LogGroup;
-    (managedLogGroup.node.defaultChild as logs.CfnLogGroup).retentionInDays =
-      props.logRetentionDays;
-    managedLogGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
     // ---- HTTP API ----
 
