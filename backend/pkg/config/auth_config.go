@@ -77,7 +77,7 @@ func (c *AuthorizerConfig) fetchAuthorizerAPIKey(ctx context.Context) (string, e
 
 	client := secretsmanager.NewFromConfig(cfg)
 	out, err := client.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(fmt.Sprintf("%s/pollen-tracker/api-key", c.Env)),
+		SecretId: aws.String(fmt.Sprintf("%s/pollen-tracker/authorizer/api-key", c.Env)),
 	})
 	if err != nil {
 		return "", fmt.Errorf("get secret value: %w", err)

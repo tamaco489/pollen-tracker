@@ -24,13 +24,13 @@ describe("PollenStack", () => {
 
   test("Pollen API キー / Turso / x-api-key シークレットが生成される", () => {
     template.hasResourceProperties("AWS::SecretsManager::Secret", {
-      Name: `${devConfig.envName}/pollen-tracker/pollen-api-key`,
+      Name: `${devConfig.envName}/pollen-tracker/google/pollen-api-key`,
     });
     template.hasResourceProperties("AWS::SecretsManager::Secret", {
-      Name: `${devConfig.envName}/pollen-tracker/turso`,
+      Name: `${devConfig.envName}/pollen-tracker/turso/config`,
     });
     template.hasResourceProperties("AWS::SecretsManager::Secret", {
-      Name: `${devConfig.envName}/pollen-tracker/api-key`,
+      Name: `${devConfig.envName}/pollen-tracker/authorizer/api-key`,
     });
   });
 

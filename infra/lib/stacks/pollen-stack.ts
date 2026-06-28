@@ -31,19 +31,19 @@ export class PollenStack extends cdk.Stack {
     });
 
     new ManagedSecret(this, "PollenApiKeySecret", {
-      secretName: `${props.config.envName}/pollen-tracker/pollen-api-key`,
+      secretName: `${props.config.envName}/pollen-tracker/google/pollen-api-key`,
       description: "Google Pollen API キー",
       lambdaRole: lambdaApi.executionRole,
     });
 
     new ManagedSecret(this, "TursoSecret", {
-      secretName: `${props.config.envName}/pollen-tracker/turso`,
+      secretName: `${props.config.envName}/pollen-tracker/turso/config`,
       description: "Turso 接続情報 (URL / AUTH_TOKEN)",
       lambdaRole: lambdaApi.executionRole,
     });
 
     new ManagedSecret(this, "XApiKeySecret", {
-      secretName: `${props.config.envName}/pollen-tracker/api-key`,
+      secretName: `${props.config.envName}/pollen-tracker/authorizer/api-key`,
       description: "Lambda Authorizer が検証する x-api-key",
       lambdaRole: lambdaApi.authorizerRole,
     });

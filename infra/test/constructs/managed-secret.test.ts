@@ -13,7 +13,7 @@ describe("ManagedSecret", () => {
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
     });
     new ManagedSecret(stack, "TestSecret", {
-      secretName: "test/pollen-tracker/turso",
+      secretName: "test/pollen-tracker/turso/config",
       description: "テスト用シークレット",
       lambdaRole: role,
     });
@@ -22,7 +22,7 @@ describe("ManagedSecret", () => {
 
   test("指定した名前と説明で Secret が生成される", () => {
     template.hasResourceProperties("AWS::SecretsManager::Secret", {
-      Name: "test/pollen-tracker/turso",
+      Name: "test/pollen-tracker/turso/config",
       Description: "テスト用シークレット",
     });
   });
