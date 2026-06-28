@@ -28,25 +28,35 @@ export class PollenStack extends cdk.Stack {
       lambdaMemorySize: props.config.lambdaMemorySize,
       logRetentionDays: props.config.logRetentionDays,
       artifactsBucketName: props.config.artifactsBucketName,
-      secretArn: props.config.secretArn,
     });
 
-    new ManagedSecret(this, "PollenApiKeySecret", {
+    const pollenApiKeySecret = new ManagedSecret(this, "PollenApiKeySecret", {
       secretName: `${props.config.envName}/pollen-tracker/pollen-api-key`,
       description: "Google Pollen API キー",
       lambdaRole: lambdaApi.executionRole,
     });
 
-    new ManagedSecret(this, "TursoSecret", {
+    const tursoSecret = new ManagedSecret(this, "TursoSecret", {
       secretName: `${props.config.envName}/pollen-tracker/turso`,
       description: "Turso 接続情報 (URL / AUTH_TOKEN)",
       lambdaRole: lambdaApi.executionRole,
     });
 
-    new ManagedSecret(this, "XApiKeySecret", {
+    const xApiKeySecret = new ManagedSecret(this, "XApiKeySecret", {
       secretName: `${props.config.envName}/pollen-tracker/api-key`,
       description: "Lambda Authorizer が検証する x-api-key",
       lambdaRole: lambdaApi.authorizerRole,
     });
+
+    // ManagedSecret の ARN を Lambda 環境変数として注入
+    lambdaApi.fn.addEnvironment(
+      "SECRET_ARN_POLLEN",
+      pollenApiKeySecret.secretArn,
+    );
+    lambdaApi.fn.addEnvironment("SECRET_ARN_TURSO", tursoSecret.secretArn);
+    lambdaApi.authorizerFn.addEnvironment(
+      "SECRET_ARN",
+      xApiKeySecret.secretArn,
+    );
   }
 }
