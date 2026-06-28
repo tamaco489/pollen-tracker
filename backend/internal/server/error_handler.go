@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
@@ -18,6 +19,16 @@ type errorResponse struct {
 // newErrorHandler はセンチネルエラーを HTTP ステータスにマッピングするカスタムエラーハンドラを返す
 func newErrorHandler(l *logger.Logger) echo.HTTPErrorHandler {
 	return func(c *echo.Context, err error) {
+		// Echo 組み込みの HTTP エラー (ルート不一致 404 等) はステータスコードをそのまま返す
+		var he *echo.HTTPError
+		if errors.As(err, &he) {
+			_ = (*c).JSON(he.Code, errorResponse{
+				Code:  http.StatusText(he.Code),
+				Error: fmt.Sprintf("%v", he.Message),
+			})
+			return
+		}
+
 		switch {
 		// 400 Bad Request: 入力エラー
 		case errors.Is(err, sentinel.ErrInvalidInput):
