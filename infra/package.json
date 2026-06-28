@@ -14,7 +14,7 @@
     "jest": "^30",
     "prettier": "^3.0.0",
     "ts-jest": "^29",
-    "aws-cdk": "2.1126.0",
+    "aws-cdk": "2.1128.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.0.0"
