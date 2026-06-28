@@ -27,14 +27,15 @@ describe("LambdaApi", () => {
       });
     });
 
-    test("APP_ENV / APP_PORT / APP_PROJECT 環境変数が設定されている", () => {
+    test("ENV / PORT / PROJECT / SERVICE 環境変数が設定されている", () => {
       template.hasResourceProperties("AWS::Lambda::Function", {
         FunctionName: "test-pollen-tracker-api",
         Environment: {
           Variables: Match.objectLike({
-            APP_ENV: "test",
-            APP_PORT: "8080",
-            APP_PROJECT: "pollen-tracker",
+            ENV: "test",
+            PORT: "8080",
+            PROJECT: "pollen-tracker",
+            SERVICE: "api-server",
           }),
         },
       });

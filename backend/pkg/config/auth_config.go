@@ -13,9 +13,9 @@ import (
 )
 
 type AuthorizerConfig struct {
-	Env     Environment `env:"APP_ENV"     envDefault:"dev"`
-	Port    string      `env:"APP_PORT"    envDefault:"8080"`
-	Project string      `env:"APP_PROJECT" envDefault:"authorizer"`
+	Env     Environment `env:"ENV"     envDefault:"dev"`
+	Project string      `env:"PROJECT" envDefault:"pollen-tracker"`
+	Service string      `env:"SERVICE" envDefault:"authorizer"`
 
 	cache apiKeyCache
 }
@@ -32,7 +32,7 @@ func LoadAuthorizer() (*AuthorizerConfig, error) {
 	}
 
 	if !cfg.Env.IsValid() {
-		return nil, fmt.Errorf("invalid APP_ENV: %q (must be one of: %s, %s)", cfg.Env, EnvDev, EnvPrd)
+		return nil, fmt.Errorf("invalid ENV: %q (must be one of: %s, %s)", cfg.Env, EnvDev, EnvPrd)
 	}
 
 	return &cfg, nil
