@@ -38,9 +38,7 @@ sqlc-vet: ## sqlc 静的解析を実行する
 sqlc-lint: sqlc-diff sqlc-vet ## sqlc スキーマ差分確認と静的解析を実行する
 
 
-ARTIFACTS_BUCKET ?= prd-pollen-tracker-storage
-
-.PHONY: fmt lint lint-api lint-pkg lint-tools mod build upload-api upload-authorizer test verify
+.PHONY: fmt lint lint-api lint-pkg lint-tools mod build test verify
 fmt: ## コードをフォーマットする
 	go fmt ./...
 
@@ -63,14 +61,6 @@ mod: ## go.mod / go.sum の整合性を確認する
 build: mod ## API・Authorizer Lambda 関数をまとめてビルドする
 	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o build/api/bootstrap ./cmd/api/
 	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o build/authorizer/bootstrap ./cmd/authorizer/
-
-upload-api: ## API Lambda バイナリを zip 化して S3 にアップロードする
-	zip -j build/api/bootstrap.zip build/api/bootstrap
-	aws s3 cp build/api/bootstrap.zip s3://$(ARTIFACTS_BUCKET)/artifacts/api/bootstrap.zip
-
-upload-authorizer: ## Authorizer Lambda バイナリを zip 化して S3 にアップロードする
-	zip -j build/authorizer/bootstrap.zip build/authorizer/bootstrap
-	aws s3 cp build/authorizer/bootstrap.zip s3://$(ARTIFACTS_BUCKET)/artifacts/authorizer/bootstrap.zip
 
 
 test: ## テストを実行する
@@ -105,6 +95,33 @@ migrate-status: ## マイグレーションの適用状況を確認する
 
 db-shell: ## Turso DB シェルに接続する
 	turso db shell http://localhost:18081
+
+
+ENV              ?= dev
+ARTIFACTS_BUCKET ?= $(ENV)-pollen-tracker-storage
+
+.PHONY: upload-api upload-authorizer
+upload-api: build ## API Lambda バイナリを zip 化して S3 にアップロードする
+	zip -j build/api/bootstrap.zip build/api/bootstrap
+	aws s3 cp build/api/bootstrap.zip s3://$(ARTIFACTS_BUCKET)/artifacts/api/bootstrap.zip
+
+upload-authorizer: build ## Authorizer Lambda バイナリを zip 化して S3 にアップロードする
+	zip -j build/authorizer/bootstrap.zip build/authorizer/bootstrap
+	aws s3 cp build/authorizer/bootstrap.zip s3://$(ARTIFACTS_BUCKET)/artifacts/authorizer/bootstrap.zip
+
+deploy-api: upload-api ## API Lambda を S3 にアップロードしてデプロイする
+	aws lambda update-function-code \
+		--function-name $(ENV)-pollen-tracker-api \
+		--s3-bucket $(ARTIFACTS_BUCKET) \
+		--s3-key artifacts/api/bootstrap.zip \
+		--profile $(AWS_PROFILE) | jq .
+
+deploy-authorizer: upload-authorizer ## Authorizer Lambda を S3 にアップロードしてデプロイする
+	aws lambda update-function-code \
+		--function-name $(ENV)-pollen-tracker-authorizer \
+		--s3-bucket $(ARTIFACTS_BUCKET) \
+		--s3-key artifacts/authorizer/bootstrap.zip \
+		--profile $(AWS_PROFILE) | jq .
 
 
 .PHONY: help

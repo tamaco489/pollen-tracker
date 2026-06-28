@@ -92,8 +92,9 @@ export class LambdaApi extends Construct {
       // Lambda Authorizer の標準タイムアウトは 10 秒。推奨は 1 秒以内だが保守的に 5 秒に設定
       timeout: cdk.Duration.seconds(5),
       environment: {
-        APP_ENV: props.envName,
-        APP_PROJECT: "authorizer",
+        ENV: props.envName,
+        PROJECT: "pollen-tracker",
+        SERVICE: "authorizer",
       },
       logGroup: authorizerLogGroup,
     });
@@ -148,9 +149,10 @@ export class LambdaApi extends Construct {
       // ref: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-quotas.html
       timeout: cdk.Duration.seconds(29),
       environment: {
-        APP_ENV: props.envName,
-        APP_PORT: "8080",
-        APP_PROJECT: "pollen-tracker",
+        ENV: props.envName,
+        PORT: "8080",
+        PROJECT: "pollen-tracker",
+        SERVICE: "api-server",
         ...props.envVars,
       },
       logGroup: apiLogGroup,

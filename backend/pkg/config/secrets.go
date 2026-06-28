@@ -22,7 +22,7 @@ func (c *Config) loadFromSecretsManager(ctx context.Context) error {
 }
 
 func (c *Config) loadTursoSecret(ctx context.Context) error {
-	val, err := fetchSecretValue(ctx, fmt.Sprintf("%s/pollen-tracker/turso", c.App.Env))
+	val, err := fetchSecretValue(ctx, fmt.Sprintf("%s/pollen-tracker/turso/config", c.App.Env))
 	if err != nil {
 		return fmt.Errorf("fetch turso secret: %w", err)
 	}
@@ -41,7 +41,7 @@ func (c *Config) loadTursoSecret(ctx context.Context) error {
 }
 
 func (c *Config) loadPollenSecret(ctx context.Context) error {
-	val, err := fetchSecretValue(ctx, fmt.Sprintf("%s/pollen-tracker/pollen-api-key", c.App.Env))
+	val, err := fetchSecretValue(ctx, fmt.Sprintf("%s/pollen-tracker/google/pollen-api-key", c.App.Env))
 	if err != nil {
 		return fmt.Errorf("fetch pollen secret: %w", err)
 	}

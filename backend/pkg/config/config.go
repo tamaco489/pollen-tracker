@@ -15,13 +15,14 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Env     Environment `env:"APP_ENV"     envDefault:"dev"`
-	Port    string      `env:"APP_PORT"    envDefault:"8080"`
-	Project string      `env:"APP_PROJECT" envDefault:"pollen-tracker"`
+	Env     Environment `env:"ENV"     envDefault:"dev"`
+	Port    string      `env:"PORT"    envDefault:"8080"`
+	Project string      `env:"PROJECT" envDefault:"pollen-tracker"`
+	Service string      `env:"SERVICE" envDefault:"api-server"`
 }
 
 func (a AppConfig) ServiceName() string {
-	return fmt.Sprintf("%s-api", a.Project)
+	return a.Service
 }
 
 // TursoDBConfig は LoadSecrets で設定される
@@ -42,7 +43,7 @@ func Load() (*Config, error) {
 	}
 
 	if !cfg.App.Env.IsValid() {
-		return nil, fmt.Errorf("invalid APP_ENV: %q (must be one of: %s, %s)", cfg.App.Env, EnvDev, EnvPrd)
+		return nil, fmt.Errorf("invalid ENV: %q (must be one of: %s, %s)", cfg.App.Env, EnvDev, EnvPrd)
 	}
 
 	return &cfg, nil

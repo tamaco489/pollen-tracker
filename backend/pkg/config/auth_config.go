@@ -13,9 +13,9 @@ import (
 )
 
 type AuthorizerConfig struct {
-	Env     Environment `env:"APP_ENV"     envDefault:"dev"`
-	Port    string      `env:"APP_PORT"    envDefault:"8080"`
-	Project string      `env:"APP_PROJECT" envDefault:"authorizer"`
+	Env     Environment `env:"ENV"     envDefault:"dev"`
+	Project string      `env:"PROJECT" envDefault:"pollen-tracker"`
+	Service string      `env:"SERVICE" envDefault:"authorizer"`
 
 	cache apiKeyCache
 }
@@ -32,7 +32,7 @@ func LoadAuthorizer() (*AuthorizerConfig, error) {
 	}
 
 	if !cfg.Env.IsValid() {
-		return nil, fmt.Errorf("invalid APP_ENV: %q (must be one of: %s, %s)", cfg.Env, EnvDev, EnvPrd)
+		return nil, fmt.Errorf("invalid ENV: %q (must be one of: %s, %s)", cfg.Env, EnvDev, EnvPrd)
 	}
 
 	return &cfg, nil
@@ -77,7 +77,7 @@ func (c *AuthorizerConfig) fetchAuthorizerAPIKey(ctx context.Context) (string, e
 
 	client := secretsmanager.NewFromConfig(cfg)
 	out, err := client.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(fmt.Sprintf("%s/pollen-tracker/api-key", c.Env)),
+		SecretId: aws.String(fmt.Sprintf("%s/pollen-tracker/authorizer/api-key", c.Env)),
 	})
 	if err != nil {
 		return "", fmt.Errorf("get secret value: %w", err)
