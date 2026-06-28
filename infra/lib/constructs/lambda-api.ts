@@ -40,6 +40,9 @@ export class LambdaApi extends Construct {
   /** API Lambda 実行ロール */
   readonly executionRole: iam.Role;
 
+  /** Authorizer Lambda 実行ロール */
+  readonly authorizerRole: iam.Role;
+
   /** HTTP API */
   readonly httpApi: apigwv2.HttpApi;
 
@@ -53,7 +56,7 @@ export class LambdaApi extends Construct {
     );
 
     // ---- Authorizer Lambda ----
-    const authorizerRole = new iam.Role(this, "AuthorizerRole", {
+    this.authorizerRole = new iam.Role(this, "AuthorizerRole", {
       roleName: `${props.envName}-pollen-tracker-authorizer-role`,
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
       // ref: https://docs.aws.amazon.com/ja_jp/aws-managed-policy/latest/reference/AWSLambdaBasicExecutionRole.html
@@ -63,14 +66,6 @@ export class LambdaApi extends Construct {
         ),
       ],
     });
-
-    // Secrets Manager から API キーを取得する権限を付与
-    authorizerRole.addToPolicy(
-      new iam.PolicyStatement({
-        actions: ["secretsmanager:GetSecretValue"],
-        resources: [props.secretArn],
-      }),
-    );
 
     const authorizerFn = new lambda.Function(this, "AuthorizerFunction", {
       functionName: `${props.envName}-pollen-tracker-authorizer`,
@@ -84,7 +79,7 @@ export class LambdaApi extends Construct {
         artifactsBucket,
         "artifacts/authorizer/bootstrap.zip",
       ),
-      role: authorizerRole,
+      role: this.authorizerRole,
       memorySize: 128,
       // Lambda Authorizer の標準タイムアウトは 10 秒。推奨は 1 秒以内だが保守的に 5 秒に設定
       timeout: cdk.Duration.seconds(5),
