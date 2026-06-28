@@ -23,6 +23,10 @@ func NewServerContainer(ctx context.Context) (*server.Server, error) {
 		return nil, fmt.Errorf("load config: %w", err)
 	}
 
+	if err := cfg.LoadSecrets(ctx); err != nil {
+		return nil, fmt.Errorf("load secrets: %w", err)
+	}
+
 	conn, err := datastore.Open(ctx, cfg, l)
 	if err != nil {
 		return nil, fmt.Errorf("connect datastore: %w", err)

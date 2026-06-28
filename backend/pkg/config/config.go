@@ -1,7 +1,9 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"os"
 
 	"github.com/caarlos0/env/v11"
 )
@@ -22,13 +24,15 @@ func (a AppConfig) ServiceName() string {
 	return fmt.Sprintf("%s-api", a.Project)
 }
 
+// TursoDBConfig は LoadSecrets で設定される
 type TursoDBConfig struct {
-	URL       string `env:"TURSO_DATABASE_URL,required,notEmpty"`
-	AuthToken string `env:"TURSO_AUTH_TOKEN"`
+	URL       string `json:"database_url"`
+	AuthToken string `json:"auth_token"`
 }
 
+// GoogleConfig は LoadSecrets で設定される
 type GoogleConfig struct {
-	PollenAPIKey string `env:"GOOGLE_POLLEN_API_KEY"`
+	PollenAPIKey string
 }
 
 func Load() (*Config, error) {
@@ -41,15 +45,21 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("invalid APP_ENV: %q (must be one of: %s, %s)", cfg.App.Env, EnvDev, EnvPrd)
 	}
 
-	// 本番環境では認証トークンが必須。
-	if cfg.App.Env.IsProduction() && cfg.TursoDB.AuthToken == "" {
-		return nil, fmt.Errorf("TURSO_AUTH_TOKEN is required in production")
-	}
-
-	// 本番環境では Google Pollen API キーが必須。
-	if cfg.App.Env.IsProduction() && cfg.Google.PollenAPIKey == "" {
-		return nil, fmt.Errorf("GOOGLE_POLLEN_API_KEY is required in production")
-	}
-
 	return &cfg, nil
+}
+
+// LoadSecrets は環境に応じて機密値を取得する。
+// 本番環境では Secrets Manager から取得し、開発環境では環境変数から直接読む。
+func (c *Config) LoadSecrets(ctx context.Context) error {
+	if c.App.Env.IsProduction() {
+		return c.loadFromSecretsManager(ctx)
+	}
+	return c.loadFromEnv()
+}
+
+func (c *Config) loadFromEnv() error {
+	c.TursoDB.URL = os.Getenv("TURSO_DATABASE_URL")
+	c.TursoDB.AuthToken = os.Getenv("TURSO_AUTH_TOKEN")
+	c.Google.PollenAPIKey = os.Getenv("GOOGLE_POLLEN_API_KEY")
+	return nil
 }
