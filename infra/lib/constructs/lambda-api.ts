@@ -15,15 +15,13 @@ import { Construct } from "constructs";
  * @property lambdaMemorySize - API Lambda 関数のメモリサイズ (MB)
  * @property logRetentionDays - CloudWatch Logs のロググループ保持日数
  * @property artifactsBucketName - Lambda ビルド成果物を格納する S3 バケット名
- * @property secretArn - Authorizer が x-api-key を取得する Secrets Manager のシークレット ARN
- * @property envVars - API Lambda に渡す追加の環境変数 (TURSO_DATABASE_URL 等)
+ * @property envVars - API Lambda に渡す追加の環境変数
  */
 interface LambdaApiProps {
   readonly envName: string;
   readonly lambdaMemorySize: number;
   readonly logRetentionDays: number;
   readonly artifactsBucketName: string;
-  readonly secretArn: string;
   readonly envVars?: { [key: string]: string };
 }
 
@@ -43,6 +41,9 @@ export class LambdaApi extends Construct {
   /** Authorizer Lambda 実行ロール */
   readonly authorizerRole: iam.Role;
 
+  /** Authorizer Lambda 関数 */
+  readonly authorizerFn: lambda.Function;
+
   /** HTTP API */
   readonly httpApi: apigwv2.HttpApi;
 
@@ -56,6 +57,7 @@ export class LambdaApi extends Construct {
     );
 
     // ---- Authorizer Lambda ----
+
     this.authorizerRole = new iam.Role(this, "AuthorizerRole", {
       roleName: `${props.envName}-pollen-tracker-authorizer-role`,
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
@@ -67,7 +69,7 @@ export class LambdaApi extends Construct {
       ],
     });
 
-    const authorizerFn = new lambda.Function(this, "AuthorizerFunction", {
+    this.authorizerFn = new lambda.Function(this, "AuthorizerFunction", {
       functionName: `${props.envName}-pollen-tracker-authorizer`,
       description:
         "Lambda Authorizer — validates x-api-key header against Secrets Manager",
@@ -86,11 +88,10 @@ export class LambdaApi extends Construct {
       environment: {
         APP_ENV: props.envName,
         APP_PROJECT: "authorizer",
-        SECRET_ARN: props.secretArn,
       },
     });
 
-    const authorizerLogGroup = authorizerFn.node.findChild(
+    const authorizerLogGroup = this.authorizerFn.node.findChild(
       "LogGroup",
     ) as logs.LogGroup;
     (authorizerLogGroup.node.defaultChild as logs.CfnLogGroup).retentionInDays =
@@ -101,7 +102,7 @@ export class LambdaApi extends Construct {
 
     const authorizer = new authorizers.HttpLambdaAuthorizer(
       "ApiKeyAuthorizer",
-      authorizerFn,
+      this.authorizerFn,
       {
         // ref: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
         identitySource: ["$request.header.x-api-key"],
