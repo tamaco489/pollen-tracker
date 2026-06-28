@@ -101,11 +101,11 @@ ENV              ?= dev
 ARTIFACTS_BUCKET ?= $(ENV)-pollen-tracker-storage
 
 .PHONY: upload-api upload-authorizer
-upload-api: ## API Lambda バイナリを zip 化して S3 にアップロードする
+upload-api: build ## API Lambda バイナリを zip 化して S3 にアップロードする
 	zip -j build/api/bootstrap.zip build/api/bootstrap
 	aws s3 cp build/api/bootstrap.zip s3://$(ARTIFACTS_BUCKET)/artifacts/api/bootstrap.zip
 
-upload-authorizer: ## Authorizer Lambda バイナリを zip 化して S3 にアップロードする
+upload-authorizer: build ## Authorizer Lambda バイナリを zip 化して S3 にアップロードする
 	zip -j build/authorizer/bootstrap.zip build/authorizer/bootstrap
 	aws s3 cp build/authorizer/bootstrap.zip s3://$(ARTIFACTS_BUCKET)/artifacts/authorizer/bootstrap.zip
 
